@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Sparkles, Play, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import heroPreview from "@/assets/hero-preview.jpg";
 
 const HeroSection = () => {
@@ -21,11 +22,11 @@ const HeroSection = () => {
             Upload your clothes, get AI-powered outfit suggestions, virtual try‑on, and instant social content. Stop staring at a full closet with nothing to wear.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" className="rounded-full shadow-lg shadow-primary/25 gap-2">
-              <Sparkles size={18} /> Try interactive demo
+            <Button asChild size="lg" className="rounded-full shadow-lg shadow-primary/25 gap-2">
+              <Link to="/styler"><Sparkles size={18} /> Try the Styler</Link>
             </Button>
-            <Button variant="outline" size="lg" className="rounded-full border-primary/30 hover:border-primary gap-2">
-              <Play size={18} /> See how it works
+            <Button asChild variant="outline" size="lg" className="rounded-full border-primary/30 hover:border-primary gap-2">
+              <Link to="/wardrobe"><Play size={18} /> Open Wardrobe</Link>
             </Button>
           </div>
           <div className="flex flex-wrap gap-6 pt-2 text-sm font-medium text-foreground">
