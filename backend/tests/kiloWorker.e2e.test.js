@@ -3,6 +3,12 @@
  * Mocks the Kilo runtime/CLI so no real external calls are made.
  * Asserts the worker uploads logs and results via linodeStorage.uploadBuffer.
  */
+process.env.PORT = process.env.PORT || '3000';
+process.env.DB_HOST = process.env.DB_HOST || 'localhost';
+process.env.DB_NAME = process.env.DB_NAME || 'test';
+process.env.DB_USER = process.env.DB_USER || 'test';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
+
 const nock = require('nock');
 const sinon = require('sinon');
 const path = require('path');

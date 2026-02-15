@@ -1,19 +1,19 @@
 /**
  * Outfit Recommendation Engine
- * Integrates: rule-based matching, ML from feedback, weather/event awareness, You.com trends
+ * Integrates: rule-based matching, ML from feedback, weather/event awareness,
+ * You.com trends, constraint solver, collaborative filtering, cached weather/trends
  */
 const { WardrobeItem, Outfit, Rating } = require('../models');
 const weatherService = require('./weather.service');
-const youcomService = require('./youcom.service');
+const trendCacheService = require('./trendCache.service');
+const constraintSolver = require('./constraintSolver.service');
+const cfService = require('./collaborativeFiltering.service');
 const fashionResearchService = require('./fashionResearch.service');
-const trendAnalyzer = require('./trendAnalyzer');
 const banditService = require('./bandit.service');
 const ColorHarmony = require('../rules/colorHarmony');
 const { scoreOutfit: occasionScore } = require('../rules/occasionRules');
 const { scoreOutfit: weatherScore } = require('../rules/weatherRules');
 const { getUserProfile } = require('../user/UserProfile');
-const path = require('path');
-const { spawn } = require('child_process');
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -41,29 +41,10 @@ function getCachedOutfit(outfitId) {
 
 class RecommendationService {
   async _collaborativeFilteringScores(userId, candidateOutfits) {
-    const scriptPath = path.join(__dirname, '../ml/cf_predict.py');
-    return new Promise((resolve) => {
-      const pyCmd = process.platform === 'win32' ? 'python' : 'python3';
-      const python = spawn(pyCmd, [scriptPath, userId, JSON.stringify(candidateOutfits)], {
-        cwd: path.dirname(scriptPath),
-      });
-      let result = '';
-      python.stdout.on('data', (data) => { result += data.toString(); });
-      python.stderr.on('data', (data) => { console.warn('CF script:', data.toString()); });
-      python.on('close', (code) => {
-        if (code === 0) {
-          try {
-            const scores = JSON.parse(result);
-            resolve(Array.isArray(scores) ? scores : candidateOutfits.map(() => 0.5));
-          } catch {
-            resolve(candidateOutfits.map(() => 0.5));
-          }
-        } else {
-          resolve(candidateOutfits.map(() => 0.5));
-        }
-      });
-      python.on('error', () => resolve(candidateOutfits.map(() => 0.5)));
-    });
+    const scores = await cfService.predictBatch(
+      candidateOutfits.map((o) => ({ userId, outfitId: o.id }))
+    );
+    return scores;
   }
 
   async generateDailyOutfits(userId, lat = 37.77, lon = -122.42, occasion = 'casual', limit = 5) {
@@ -71,21 +52,25 @@ class RecommendationService {
     const weather = await weatherService.getCurrentWeather(lat, lon);
     const weatherTags = weatherService.weatherToTags(weather);
 
-    // 2. You.com trends (via fashion research for richer extraction)
+    // 2. Cached You.com trends (6h cache to reduce API calls)
     let trends = { trendingColors: [], trendingCategories: [], trendingStyles: [], keywords: [] };
     try {
       const research = await fashionResearchService.researchUserFashion(userId, occasion);
       trends = research.trends || trends;
     } catch {
-      const trendsData = await youcomService.searchFashionTrends(
-        `latest ${occasion} fashion trends ${new Date().getFullYear()}`
-      );
-      const extracted = youcomService.extractTrends(trendsData);
+      const cachedTrends = await trendCacheService.getTrends({
+        category: 'all',
+        season: null,
+        limit: 20,
+      });
+      const trendList = cachedTrends.trends || [];
+      const text = trendList.map((t) => `${t.title || ''} ${t.description || ''}`).join(' ').toLowerCase();
+      const colorMatches = text.match(/\b(navy|sage|terracotta|cream|black|white|gray|red|blue|green|pink|brown|beige|olive)\b/gi) || [];
       trends = {
-        trendingColors: extracted.trendingColors || [],
-        trendingCategories: extracted.keywords || [],
+        trendingColors: [...new Set(colorMatches)].slice(0, 8),
+        trendingCategories: trendList.slice(0, 5).map((t) => t.title).filter(Boolean),
         trendingStyles: [],
-        keywords: extracted.keywords || [],
+        keywords: trendList.slice(0, 8).map((t) => t.title).filter(Boolean),
       };
     }
 
@@ -93,8 +78,18 @@ class RecommendationService {
     const wardrobe = await WardrobeItem.findAll({ where: { userId } });
     const profile = getUserProfile(userId);
 
-    // 4. Generate candidates
-    const candidates = this._generateCandidates(wardrobe, occasion, weatherTags);
+    // 4. Generate candidates using constraint solver (color harmony, occasion, weather)
+    const constraintCandidates = constraintSolver.generateValidOutfits(wardrobe, {
+      occasion,
+      weatherTags,
+    });
+    const candidates =
+      constraintCandidates.length > 0
+        ? constraintCandidates.map((items) => ({
+            items,
+            desc: this._describeOutfit(items, occasion),
+          }))
+        : this._generateCandidates(wardrobe, occasion, weatherTags);
 
     // 5. Score each candidate with rule-based + ML + trends
     const scored = [];
@@ -163,6 +158,12 @@ class RecommendationService {
     }
 
     return result;
+  }
+
+  _describeOutfit(items, occasion) {
+    const getAttr = (i, k) => i.extractedAttributes?.[k];
+    const colors = items.map((i) => getAttr(i, 'color') || 'styled').join(' & ');
+    return `A ${occasion} look with ${colors}.`;
   }
 
   _generateCandidates(wardrobe, occasion, weatherTags) {

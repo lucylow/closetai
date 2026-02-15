@@ -9,14 +9,16 @@
     "kilo-worker": "node scripts/runKiloWorker.js",
     "stripe-worker": "node workers/stripeUsageReporter.js",
     "test": "jest",
-    "migrate": "node scripts/run-migrations.js",
-    "seed-plans": "node scripts/seed-plans.js",
+    "migrate": "node scripts/migrate.js",
+    "migrate:legacy": "node scripts/run-migrations.js",
+    "seed-plans": "node scripts/seedPlans.js",
+    "seed-plans:legacy": "node scripts/seed-plans.js",
     "worker": "node worker.js"
   },
   "dependencies": {
-    "@kubernetes/client-node": "^0.22.0",
     "@aws-sdk/client-s3": "^3.990.0",
     "@aws-sdk/s3-request-presigner": "^3.990.0",
+    "@kubernetes/client-node": "^0.22.0",
     "analytics-node": "^6.2.0",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
@@ -47,6 +49,11 @@
     "jest": "^29.7.0",
     "nock": "^13.5.0",
     "nodemon": "^3.0.2",
+    "sinon": "^21.0.1",
     "supertest": "^7.0.0"
+  },
+  "optionalDependencies": {
+    "@kilocode/agent-runtime": "npm:null@*",
+    "@kilocode/cli": "^1.0.21"
   }
 }

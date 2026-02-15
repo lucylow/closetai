@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "closetai.fullname" . }}-worker
+  labels:
+    app: {{ include "closetai.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "closetai.name" . }}
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: {{ include "closetai.name" . }}
+        component: worker
+    spec:
+      {{- with .Values.nodeSelector.gpu }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+      {{- end }}
+      containers:
+        - name: worker
+          image: "{{ .Values.image.worker.repository }}:{{ .Values.image.worker.tag }}"
+          imagePullPolicy: {{ .Values.image.worker.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ include "closetai.fullname" . }}-secrets
+          resources:
+            requests:
+              cpu: {{ .Values.resources.worker.requests.cpu }}
+              memory: {{ .Values.resources.worker.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.worker.limits.cpu }}
+              memory: {{ .Values.resources.worker.limits.memory }}
+              nvidia.com/gpu: {{ .Values.resources.worker.limits.gpu | toString }}

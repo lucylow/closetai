@@ -5,6 +5,7 @@ import { analytics } from "@/services/analytics.service";
 import { SAMPLE_WARDROBE, TRENDS } from "@/lib/data";
 import type { ClothingItem } from "@/lib/data";
 
+
 export interface OutfitItem {
   id: string;
   name: string;
@@ -141,5 +142,83 @@ export function useRecommendation() {
     [user]
   );
 
-  return { getDailyOutfits, rateOutfit, saveOutfit };
+  const getInitialOutfits = useCallback(
+    async (wardrobe: ClothingItem[], count = 3): Promise<DailyOutfit[]> => {
+      if (user) {
+        try {
+          const params = new URLSearchParams({ wardrobeSize: String(wardrobe.length) });
+          const res = await api.get<Array<{
+            id: string;
+            items: Array<{ id: string; imageUrl?: string; extractedAttributes?: Record<string, string>; userTags?: string[] }>;
+            description: string;
+            totalScore: number;
+          }>>(`/recommendations/initial?${params.toString()}`);
+          return res.slice(0, count).map((o) => ({
+            id: o.id,
+            items: o.items.map(toOutfitItem),
+            description: o.description,
+            trendScore: o.totalScore ?? 0.8,
+          }));
+        } catch {
+          // Fall through to mock
+        }
+      }
+      await new Promise((r) => setTimeout(r, 500));
+      return mockOutfits().slice(0, count);
+    },
+    [user]
+  );
+
+  const analyzeCompatibility = useCallback(
+    async (
+      screenshotFile: File,
+      _wardrobe?: ClothingItem[]
+    ): Promise<{ score: number; recommendations: DailyOutfit[]; attributes?: Record<string, string> }> => {
+      if (user) {
+        try {
+          const res = await api.upload<{
+            score: number;
+            recommendations: DailyOutfit[];
+            attributes?: Record<string, string>;
+          }>("/shopping/analyze", screenshotFile);
+          return res;
+        } catch {
+          // Fall through to mock
+        }
+      }
+      await new Promise((r) => setTimeout(r, 1000));
+      const mock = mockOutfits();
+      return {
+        score: 78,
+        recommendations: mock,
+        attributes: { category: "top", color: "blue", pattern: "solid", style: "casual" },
+      };
+    },
+    [user]
+  );
+
+  const findMatchingOutfits = useCallback(
+    async (itemAttributes: Record<string, string>): Promise<DailyOutfit[]> => {
+      if (user) {
+        try {
+          const res = await api.post<DailyOutfit[]>("/shopping/match", itemAttributes);
+          return res;
+        } catch {
+          // Fall through to mock
+        }
+      }
+      await new Promise((r) => setTimeout(r, 400));
+      return mockOutfits();
+    },
+    [user]
+  );
+
+  return {
+    getDailyOutfits,
+    rateOutfit,
+    saveOutfit,
+    getInitialOutfits,
+    analyzeCompatibility,
+    findMatchingOutfits,
+  };
 }

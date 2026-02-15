@@ -82,7 +82,10 @@ const MOCK_ITEM_NAMES: Record<string, string> = {
   "item-004": "Leather Jacket",
   "item-005": "Sneakers",
   "item-006": "Wool Scarf",
-  "item-007": "Blazer",
+  "item-007": "Navy Blazer",
+  "item-008": "Silk Blouse",
+  "item-009": "Khaki Chinos",
+  "item-010": "Summer Hat",
 };
 
 /** Convert mock wardrobe items to ClothingItem format for UI compatibility */

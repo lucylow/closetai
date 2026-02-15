@@ -60,12 +60,14 @@ function getClient() {
   if (!redisClient) {
     try {
       const Redis = require('ioredis');
-      redisClient = new Redis({
-        host: env.redis?.host || 'localhost',
-        port: env.redis?.port || 6379,
-        retryStrategy: () => null,
-        maxRetriesPerRequest: 1,
-      });
+      redisClient = env.redis?.url
+        ? new Redis(env.redis.url, { retryStrategy: () => null, maxRetriesPerRequest: 1 })
+        : new Redis({
+            host: env.redis?.host || 'localhost',
+            port: env.redis?.port || 6379,
+            retryStrategy: () => null,
+            maxRetriesPerRequest: 1,
+          });
     } catch (e) {
       return null;
     }

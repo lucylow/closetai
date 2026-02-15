@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "closetai.fullname" . }}-backend
+  labels:
+    app: {{ include "closetai.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "closetai.name" . }}
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: {{ include "closetai.name" . }}
+        component: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag }}"
+          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+          envFrom:
+            - secretRef:
+                name: {{ include "closetai.fullname" . }}-secrets
+          resources:
+            requests:
+              cpu: {{ .Values.resources.backend.requests.cpu }}
+              memory: {{ .Values.resources.backend.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.backend.limits.cpu }}
+              memory: {{ .Values.resources.backend.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5

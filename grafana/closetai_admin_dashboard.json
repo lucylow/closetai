@@ -1,0 +1,100 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1623456789012,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Perfect Corp Credits",
+      "targets": [
+        {
+          "expr": "closet_perfcorp_last_credits",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "max": null,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 200 },
+              { "color": "red", "value": 50 }
+            ]
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "datasource": "Prometheus",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "title": "Queue Depth (waiting / active / failed)",
+      "targets": [
+        { "expr": "closet_queue_waiting", "refId": "A" },
+        { "expr": "closet_queue_active", "refId": "B" },
+        { "expr": "closet_queue_failed", "refId": "C" }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": [ "lastNotNull" ], "values": false }
+      }
+    },
+    {
+      "datasource": "Prometheus",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 3,
+      "title": "Avg Job Duration (5m)",
+      "targets": [
+        {
+          "expr": "rate(closet_job_duration_seconds_sum[5m]) / rate(closet_job_duration_seconds_count[5m])",
+          "legendFormat": "avg job time (5m)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "datasource": "Prometheus",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 14 },
+      "id": 4,
+      "title": "GPU Utilization (avg by instance)",
+      "targets": [
+        {
+          "expr": "avg(nvidia_gpu_utilization_percent) by (instance)",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent" } }
+    }
+  ],
+  "schemaVersion": 32,
+  "style": "dark",
+  "tags": ["closetai", "admin"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ClosetAI Admin Metrics",
+  "version": 1
+}

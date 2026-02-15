@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Menu, X, Home, Shirt, Sparkles, TrendingUp, FileText, ShoppingBag, BarChart3, LogIn, LogOut, Scan, Award } from "lucide-react";
+import { Sun, Moon, Menu, X, Home, LayoutDashboard, Shirt, Sparkles, TrendingUp, FileText, ShoppingBag, BarChart3, LogIn, LogOut, Scan, Award } from "lucide-react";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOnboarding } from "@/contexts/OnboardingContext";
@@ -11,6 +11,7 @@ import "./navbar.css";
 
 const navItems = [
   { path: "/", label: "Home", icon: Home },
+  { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/wardrobe", label: "Wardrobe", icon: Shirt, tourClass: "wardrobe-link" },
   { path: "/outfits", label: "Outfits", icon: Sparkles, tourClass: "outfits-link" },
   { path: "/trends", label: "Trends", icon: TrendingUp, tourClass: "trends-link" },

@@ -22,6 +22,16 @@ function getStripeUsageQueue() {
   return stripeUsageQueue;
 }
 
+/** Enqueue Stripe metered usage report (async, for hot path) */
+async function enqueueStripeUsageReport({ subscriptionItemId, quantity, timestamp }) {
+  const q = getStripeUsageQueue();
+  return await q.add('stripe-usage-report', {
+    subscriptionItemId,
+    quantity: quantity ?? 1,
+    timestamp: timestamp ?? Math.floor(Date.now() / 1000),
+  });
+}
+
 /**
  * enqueueJob
  * type: string e.g. 'vton', 'generate', 'measure'
@@ -121,6 +131,7 @@ module.exports = {
   getJobStatus,
   queue,
   getStripeUsageQueue,
+  enqueueStripeUsageReport,
   getQueueJobCount,
   getLastJobInfo,
   getQueueCounts,

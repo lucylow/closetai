@@ -6,6 +6,7 @@ const env = require('../config/env');
 const logger = require('../utils/logger');
 const { getKiloAgentQueue } = require('../lib/queue');
 const { runKiloAgent } = require('../lib/kiloAgentRunner');
+const { runAgentWithRuntime } = require('../lib/kiloAgentRuntimeRunner');
 
 let kiloAgentQueue = null;
 
@@ -16,17 +17,32 @@ try {
     if (job.name !== 'kilo-agent') return null;
 
     const payload = job.data.payload || job.data;
-    const { repoUrl, agent, profileEnv = {}, timeoutMs = 10 * 60 * 1000, dryRun = false } = payload;
+    const {
+      repoUrl,
+      agent,
+      profileEnv = {},
+      timeoutMs = 10 * 60 * 1000,
+      dryRun = false,
+      useRuntime = false,
+    } = payload;
 
     job.progress(10);
 
-    const result = await runKiloAgent({
-      repoUrl,
-      agent,
-      profileEnv,
-      timeoutMs,
-      dryRun,
-    });
+    const result =
+      useRuntime && !dryRun
+        ? await runAgentWithRuntime({
+            repoUrl,
+            agentName: agent,
+            profileEnv,
+            timeoutMs,
+          })
+        : await runKiloAgent({
+            repoUrl,
+            agent,
+            profileEnv,
+            timeoutMs,
+            dryRun,
+          });
 
     job.progress(100);
 

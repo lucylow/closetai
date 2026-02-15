@@ -1,0 +1,61 @@
+# Configure these values per environment. Prefer injecting secrets via
+# kubectl create secret generic or external-secrets rather than values.
+
+replicaCount: 2
+
+image:
+  backend:
+    repository: ghcr.io/yourorg/closetai-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  worker:
+    repository: ghcr.io/yourorg/closetai-worker
+    tag: latest
+    pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+resources:
+  backend:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  worker:
+    requests:
+      cpu: 1000m
+      memory: 6Gi
+    limits:
+      cpu: 2000m
+      memory: 8Gi
+      gpu: 1
+
+nodeSelector:
+  worker: {}
+  # Example for LKE GPU node pool: { nodepool: gpu }
+  gpu: {}
+
+# Example for GPU nodes: [{ key: "nvidia.com/gpu", operator: "Exists", effect: "NoSchedule" }]
+tolerations: []
+affinity: {}
+
+# Inject via --set-file or external-secrets. Never commit real values.
+secrets:
+  perfectCorpApiKey: ""
+  perfectCorpApiSecret: ""
+  s3Key: ""
+  s3Secret: ""
+  s3Bucket: ""
+  redisUrl: ""
+  adminToken: ""
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 60

@@ -3,7 +3,7 @@
  */
 const Stripe = require('stripe');
 const env = require('../config/env');
-const { User } = require('../models');
+const db = require('../lib/db');
 const { enqueueStripeUsageReport } = require('../lib/queue');
 
 const stripe = env.stripe?.secretKey
@@ -17,9 +17,9 @@ async function createStripeCustomer({ userId, email, name }) {
     name: name || email,
     metadata: { userId },
   });
-  await User.update(
-    { stripeCustomerId: customer.id },
-    { where: { id: userId } }
+  await db.query(
+    `UPDATE users SET stripe_customer_id = $1, updated_at = now() WHERE id = $2`,
+    [customer.id, userId]
   );
   return customer;
 }

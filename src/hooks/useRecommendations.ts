@@ -52,6 +52,45 @@ export type DailyOutfit = {
   trend: string;
 };
 
+/** Raw recommendation engine response (POST /recommendations/recommend) */
+export type TrendRecommendationResult = {
+  userId: string;
+  generatedAt: string;
+  trendInsights: {
+    summary: string;
+    details: { title: string; url: string; relevance?: number }[];
+    fetchedAt?: string;
+    sourceCount?: number;
+    rateInfo?: unknown;
+  };
+  outfits: {
+    rank: number;
+    items: { id: string; category: string; color: string; imageUrl?: string; trendScore: number; name?: string }[];
+    score: number;
+    avgTrend: number;
+    styleScore: number;
+    occasion: string | null;
+    weather: { condition: string; temp?: number } | null;
+    matchedTrends: { trend: string; url: string; relevance: number }[];
+    reason: string;
+  }[];
+};
+
+/** Fetch trend-aware outfit recommendations (raw engine format). Example:
+ * const result = await fetchTrendRecommendations(wardrobe, { occasion: "work", weather: { condition: "cold", temp: 8 } });
+ */
+export async function fetchTrendRecommendations(
+  wardrobe: { id: string; category?: string; color?: string; style?: string; pattern?: string; imageUrl?: string; tags?: string[]; wear_count?: number; wearCount?: number; extractedAttributes?: Record<string, unknown> }[],
+  options?: { occasion?: string; weather?: { condition: string; temp?: number }; userId?: string }
+): Promise<TrendRecommendationResult> {
+  return api.post<TrendRecommendationResult>("/recommendations/recommend", {
+    userId: options?.userId ?? "user123",
+    wardrobe,
+    occasion: options?.occasion ?? "work",
+    weather: options?.weather ?? { condition: "cold", temp: 8 },
+  });
+}
+
 export function useRecommendations(occasion = "casual") {
   const { user } = useAuth();
 

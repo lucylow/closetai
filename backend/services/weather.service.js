@@ -1,21 +1,35 @@
 const axios = require('axios');
+const NodeCache = require('node-cache');
 const env = require('../config/env');
+
+const weatherCache = new NodeCache({ stdTTL: 1800 }); // 30 minutes
 
 class WeatherService {
   async getCurrentWeather(lat, lon) {
+    const cacheKey = `weather_${lat}_${lon}`;
+    const cached = weatherCache.get(cacheKey);
+    if (cached) return cached;
+
     if (!env.openWeatherMap?.apiKey) {
       return { temp: 20, condition: 'clear', humidity: 50, windSpeed: 5 };
     }
-    const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
-      params: { lat, lon, appid: env.openWeatherMap.apiKey, units: 'metric' },
-    });
-    const data = response.data;
-    return {
-      temp: data.main.temp,
-      condition: data.weather[0].main.toLowerCase(),
-      humidity: data.main.humidity,
-      windSpeed: data.wind?.speed || 0,
-    };
+    try {
+      const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+        params: { lat, lon, appid: env.openWeatherMap.apiKey, units: 'metric' },
+      });
+      const data = response.data;
+      const weather = {
+        temp: data.main.temp,
+        condition: data.weather[0].main.toLowerCase(),
+        humidity: data.main.humidity,
+        windSpeed: data.wind?.speed || 0,
+      };
+      weatherCache.set(cacheKey, weather);
+      return weather;
+    } catch (err) {
+      console.error('Weather API error:', err.message);
+      return { temp: 20, condition: 'clear', humidity: 50, windSpeed: 5 };
+    }
   }
 
   weatherToTags(weather) {

@@ -27,7 +27,10 @@ const Rating = sequelize.define('Rating', {
 }, {
   timestamps: true,
   underscored: true,
-  indexes: [{ fields: ['user_id', 'outfit_id'], unique: true }],
+  indexes: [
+    { fields: ['user_id', 'outfit_id'], unique: true },
+    { fields: ['user_id'] },
+  ],
 });
 
 module.exports = Rating;

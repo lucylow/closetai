@@ -3,9 +3,12 @@ const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = re
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const debug = require('debug')('closet:storage');
 
-const BUCKET = process.env.S3_BUCKET;
-if (!BUCKET) {
-  throw new Error('S3_BUCKET environment variable is required');
+function getBucket() {
+  const bucket = process.env.S3_BUCKET;
+  if (!bucket) {
+    throw new Error('S3_BUCKET environment variable is required for object storage');
+  }
+  return bucket;
 }
 
 const s3Config = {
@@ -65,7 +68,7 @@ async function getSignedUrlForKey(key, expiresInSeconds = 3600) {
 }
 
 async function getObjectBuffer(key) {
-  const cmd = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+  const cmd = new GetObjectCommand({ Bucket: getBucket(), Key: key });
   const resp = await s3.send(cmd);
   // resp.Body is a stream; convert to Buffer
   const chunks = [];

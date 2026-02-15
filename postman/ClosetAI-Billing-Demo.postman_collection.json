@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "ClosetAI Billing Demo",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "api_url", "value": "http://localhost:5000/api" },
+    { "key": "user_id", "value": "{{$guid}}" },
+    { "key": "email", "value": "test@example.com" },
+    { "key": "customer_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "POST /users (Sign up)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{user_id}}\",\n  \"email\": \"{{email}}\",\n  \"full_name\": \"Test User\"\n}"
+            },
+            "url": "{{api_url}}/users"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "POST /billing/create-customer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"email\": \"{{email}}\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": "{{api_url}}/billing/create-customer"
+          }
+        },
+        {
+          "name": "POST /billing/create-subscription",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"priceId\": \"price_starter_123\"\n}"
+            },
+            "url": "{{api_url}}/billing/create-subscription"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usage",
+      "item": [
+        {
+          "name": "POST /usage/report",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"metric\": \"ai_generations\",\n  \"value\": 1\n}"
+            },
+            "url": "{{api_url}}/usage/report"
+          }
+        },
+        {
+          "name": "GET /usage/check",
+          "request": {
+            "method": "GET",
+            "url": "{{api_url}}/usage/check?userId={{user_id}}&metric=ai_generations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "GET /admin/status",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{admin_token}}"}],
+            "url": "{{api_url}}/admin/status"
+          }
+        }
+      ]
+    }
+  ]
+}

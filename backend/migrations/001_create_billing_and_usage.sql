@@ -13,6 +13,17 @@ BEGIN
   END IF;
 END $$;
 
+-- Add full_name to users (if column doesn't exist, for demo/signup)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'full_name'
+  ) THEN
+    ALTER TABLE users ADD COLUMN full_name text;
+  END IF;
+END $$;
+
 -- Plans table (mirror of Stripe price ids / SKU)
 CREATE TABLE IF NOT EXISTS plans (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

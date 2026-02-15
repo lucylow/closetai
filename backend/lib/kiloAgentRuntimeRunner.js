@@ -11,8 +11,8 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const crypto = require('crypto');
 const debug = require('debug')('closet:kilo-runtime');
-const { v4: uuidv4 } = require('uuid');
 const linodeStorage = require('../services/linode.service');
 const { exec } = require('child_process');
 const { promisify } = require('util');
@@ -61,7 +61,7 @@ async function runAgentWithRuntime(opts = {}) {
   } = opts;
   if (!repoUrl || !agentName) throw new Error('repoUrl and agentName required');
 
-  const workdir = path.join(os.tmpdir(), `kilo-agent-runtime-${uuidv4()}`);
+  const workdir = path.join(os.tmpdir(), `kilo-agent-runtime-${crypto.randomUUID()}`);
   fs.mkdirSync(workdir, { recursive: true });
 
   try {
@@ -158,8 +158,8 @@ async function runAgentWithRuntime(opts = {}) {
 
         const durationMs = Date.now() - start;
 
-        const logsKey = `kilo-runtime-logs/${uuidv4()}.txt`;
-        const resultKey = `kilo-runtime-output/${uuidv4()}.json`;
+        const logsKey = `kilo-runtime-logs/${crypto.randomUUID()}.txt`;
+        const resultKey = `kilo-runtime-output/${crypto.randomUUID()}.json`;
         await linodeStorage.uploadBuffer(
           Buffer.from(collectedLogs || ''),
           logsKey,

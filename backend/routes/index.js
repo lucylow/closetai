@@ -18,11 +18,13 @@ const adminRoutes = require('./admin.routes');
 const kiloRoutes = require('./kilo.routes');
 const usageRoutes = require('./usage.routes');
 const billingRoutes = require('./billing.routes');
+const usersRoutes = require('./users.routes');
 const jobsRoutes = require('./jobs.routes');
 
 const router = express.Router();
 
 router.use('/auth', authRoutes);
+router.use('/users', usersRoutes);
 router.use('/ai', aiRoutes);
 router.use('/tryon', tryonRoutes);
 router.use('/wardrobe', wardrobeRoutes);
