@@ -1,0 +1,44 @@
+.trends-with-citations {
+  padding: 0;
+}
+
+.trend-card {
+  border-radius: 1.25rem;
+  transition: box-shadow 0.2s;
+}
+
+.trend-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.citation {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  border-left: 4px solid hsl(var(--accent));
+  padding-left: 12px;
+  background: hsl(var(--muted) / 0.5);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.citation-link {
+  color: hsl(var(--accent));
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.citation-link:hover {
+  opacity: 0.85;
+}
+
+.citation-snippet {
+  display: block;
+  margin-top: 6px;
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+  font-size: 0.8125rem;
+}

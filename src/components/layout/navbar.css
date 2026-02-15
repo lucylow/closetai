@@ -1,0 +1,137 @@
+/* Navbar styles - integrates with Tailwind/glass theme */
+.navbar {
+  background: hsl(var(--background));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid hsl(var(--border));
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--glass-shadow);
+}
+
+.navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.logo span {
+  background: none;
+  -webkit-text-fill-color: hsl(var(--primary));
+}
+
+.nav-menu-desktop {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 40px;
+  text-decoration: none;
+  color: hsl(var(--muted-foreground));
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: hsl(var(--muted));
+  color: hsl(var(--primary));
+}
+
+.nav-link.active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.nav-icon {
+  flex-shrink: 0;
+}
+
+.nav-label {
+  font-size: 1rem;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.theme-toggle,
+.menu-toggle {
+  background: none;
+  border: none;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover,
+.menu-toggle:hover {
+  background: hsl(var(--muted));
+  color: hsl(var(--primary));
+}
+
+.menu-toggle {
+  display: none;
+}
+
+.nav-menu-mobile {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--glass-shadow);
+}
+
+.nav-menu-mobile .nav-link {
+  padding: 1rem;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+  .nav-menu-desktop {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .navbar-container {
+    padding: 1rem;
+  }
+}

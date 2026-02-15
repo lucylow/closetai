@@ -58,6 +58,23 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  .dark {
+    --background: 260 30% 12%;
+    --foreground: 260 20% 96%;
+    --card: 260 25% 16%;
+    --card-foreground: 260 20% 96%;
+    --popover: 260 25% 16%;
+    --popover-foreground: 260 20% 96%;
+    --muted: 260 20% 22%;
+    --muted-foreground: 260 15% 65%;
+    --border: 260 20% 25%;
+    --input: 260 20% 25%;
+    --glass-bg: rgba(30, 27, 46, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-card-bg: rgba(45, 40, 65, 0.6);
+    --gradient-bg: linear-gradient(145deg, hsl(260 30% 12%), hsl(260 25% 18%));
+  }
 }
 
 @layer base {
@@ -118,5 +135,10 @@
     background: var(--trend-bg);
     color: hsl(var(--trend-color));
     @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .main-content {
+    min-height: calc(100vh - 80px);
+    padding: 20px;
   }
 }

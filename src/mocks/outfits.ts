@@ -1,0 +1,53 @@
+// mocks/outfits.ts
+export const dailyOutfits = [
+  {
+    id: "outfit-001",
+    items: ["item-001", "item-002", "item-005"],
+    description: "Casual everyday look with sneakers",
+    occasion: "casual",
+    weatherTags: ["mild", "sunny"],
+    trendScore: 0.85,
+    userScore: 0.9,
+    totalScore: 0.88,
+    trendInsights: [
+      { trend: "Oversized silhouettes", source: "Vogue" },
+      { trend: "Monochrome styling", source: "Harper's Bazaar" },
+    ],
+  },
+  {
+    id: "outfit-002",
+    items: ["item-003", "item-004"],
+    description: "Edgy bohemian party look",
+    occasion: "party",
+    weatherTags: ["cool", "clear"],
+    trendScore: 0.92,
+    userScore: 0.7,
+    totalScore: 0.81,
+    trendInsights: [
+      { trend: "Floral prints", source: "Elle" },
+      { trend: "Leather accents", source: "Who What Wear" },
+    ],
+  },
+  {
+    id: "outfit-003",
+    items: ["item-007", "item-002", "item-005"],
+    description: "Smart casual for the office",
+    occasion: "work",
+    weatherTags: ["cool", "cloudy"],
+    trendScore: 0.78,
+    userScore: 0.95,
+    totalScore: 0.87,
+    trendInsights: [{ trend: "Tailored separates", source: "Business of Fashion" }],
+  },
+  {
+    id: "outfit-004",
+    items: ["item-006", "item-001", "item-002"],
+    description: "Cozy winter casual",
+    occasion: "casual",
+    weatherTags: ["cold", "snowy"],
+    trendScore: 0.72,
+    userScore: 0.8,
+    totalScore: 0.76,
+    trendInsights: [],
+  },
+];

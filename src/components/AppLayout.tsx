@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Shirt, Sparkles, TrendingUp, Share2, Home, Menu, X } from "lucide-react";
+import { Shirt, Sparkles, TrendingUp, Share2, Home, Menu, X, LogIn, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AuthDialog } from "@/components/AuthDialog";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { to: "/", icon: Home, label: "Home" },
@@ -12,8 +15,10 @@ const navItems = [
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === "/";
+  const { user, logout } = useAuth();
 
   if (isLanding) return <>{children}</>;
 
@@ -28,7 +33,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {navItems.slice(1).map(item => (
+            {navItems.slice(1).map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -44,6 +49,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 {item.label}
               </NavLink>
             ))}
+            {user ? (
+              <Button variant="ghost" size="sm" onClick={logout} className="gap-2 text-muted-foreground">
+                <LogOut size={16} /> Sign out
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => setAuthOpen(true)} className="gap-2 rounded-full border-primary/30">
+                <LogIn size={16} /> Sign in
+              </Button>
+            )}
           </nav>
 
           {/* Mobile toggle */}
@@ -70,9 +84,20 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 {item.label}
               </NavLink>
             ))}
+            {user ? (
+              <button onClick={() => { logout(); setMobileOpen(false); }} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground w-full">
+                <LogOut size={16} /> Sign out
+              </button>
+            ) : (
+              <button onClick={() => { setAuthOpen(true); setMobileOpen(false); }} className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground w-full">
+                <LogIn size={16} /> Sign in
+              </button>
+            )}
           </nav>
         )}
       </header>
+
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
 
       {/* Main content */}
       <main className="flex-1 container py-8">

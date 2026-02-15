@@ -1,0 +1,159 @@
+.advanced-outfit-suggestions {
+  padding: 20px;
+}
+
+.suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.refresh-btn {
+  background: hsl(var(--accent));
+  color: white;
+  border: none;
+  border-radius: 40px;
+  padding: 8px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.outfit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.outfit-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.outfit-items {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.outfit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.outfit-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.outfit-item span {
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.outfit-details {
+  flex: 1;
+}
+
+.outfit-description {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.outfit-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.rating {
+  display: flex;
+  gap: 4px;
+}
+
+.star {
+  font-size: 1.5rem;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star.filled {
+  color: #ffb347;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s;
+  padding: 4px;
+}
+
+.icon-btn:hover {
+  color: hsl(var(--accent));
+}
+
+.explanation-tooltip {
+  position: absolute;
+  background: hsl(var(--card));
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--glass-shadow);
+  max-width: 300px;
+  z-index: 1000;
+  border: 1px solid hsl(var(--accent));
+}
+
+.explanation-tooltip h4 {
+  margin-bottom: 8px;
+  color: hsl(var(--accent));
+}
+
+.explanation-tooltip button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: hsl(var(--accent));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 24px;
+  color: hsl(var(--muted-foreground));
+}

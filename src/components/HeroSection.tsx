@@ -2,7 +2,9 @@ import { motion } from "framer-motion";
 import { Sparkles, Play, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import heroPreview from "@/assets/hero-preview.jpg";
+
+// Placeholder hero image - replace with hero-preview.jpg when available
+const HERO_IMAGE = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop";
 
 const HeroSection = () => {
   return (
@@ -23,7 +25,7 @@ const HeroSection = () => {
           </p>
           <div className="flex flex-wrap gap-4">
             <Button asChild size="lg" className="rounded-full shadow-lg shadow-primary/25 gap-2">
-              <Link to="/styler"><Sparkles size={18} /> Try the Styler</Link>
+              <Link to="/outfits"><Sparkles size={18} /> Try Outfits</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full border-primary/30 hover:border-primary gap-2">
               <Link to="/wardrobe"><Play size={18} /> Open Wardrobe</Link>
@@ -44,9 +46,9 @@ const HeroSection = () => {
         >
           <div className="glass-card p-4 animate-float">
             <img
-              src={heroPreview}
-              alt="ClosetAI app preview showing AI wardrobe stylist interface"
-              className="w-full rounded-2xl"
+              src={HERO_IMAGE}
+              alt="ClosetAI app preview - AI wardrobe stylist and virtual try-on"
+              className="w-full rounded-2xl object-cover"
             />
           </div>
         </motion.div>

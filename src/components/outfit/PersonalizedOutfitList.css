@@ -1,0 +1,78 @@
+.personalized-outfits {
+  padding: 0;
+}
+
+.outfit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.outfit-card {
+  border-radius: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.outfit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.outfit-items {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.outfit-item {
+  flex: 1 1 80px;
+  text-align: center;
+}
+
+.outfit-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.outfit-item span {
+  display: block;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.trend-score {
+  font-weight: 600;
+  color: hsl(var(--accent));
+  margin-bottom: 10px;
+}
+
+.trend-reasons {
+  border-top: 1px solid hsl(var(--border));
+  padding-top: 12px;
+  font-size: 0.875rem;
+}
+
+.trend-reasons ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.trend-reasons li {
+  margin-bottom: 6px;
+}
+
+.trend-citation-link {
+  color: hsl(var(--accent));
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trend-citation-link:hover {
+  text-decoration: underline;
+}
