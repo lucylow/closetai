@@ -175,6 +175,117 @@ class YouComService {
   }
 
   /**
+   * Build a search query for styling advice based on an item and optional context.
+   * @param {Object} item - Wardrobe item with extractedAttributes
+   * @param {Object} context - { occasion, vibe }
+   * @returns {string} Optimized search query for styling advice
+   */
+  buildStylingQuery(item, context = {}) {
+    const attrs = item.extractedAttributes || {};
+    const parts = [];
+
+    const description = [
+      attrs.color,
+      attrs.pattern,
+      attrs.category,
+      attrs.style,
+    ].filter(Boolean).join(' ');
+
+    parts.push(`how to style a ${description || 'clothing item'}`);
+
+    if (context.occasion) {
+      parts.push(`for ${context.occasion}`);
+    }
+    if (context.vibe) {
+      parts.push(`${context.vibe} look`);
+    }
+    parts.push(new Date().getFullYear());
+    parts.push('outfit ideas', 'styling tips', 'fashion blog');
+
+    return parts.join(' ');
+  }
+
+  /**
+   * Search for styling advice and return results with citations.
+   * @param {Object} item - Wardrobe item
+   * @param {Object} context - { occasion, vibe }
+   * @returns {Promise<{ query: string, advice: Array, citations: Array }>}
+   */
+  async getStylingAdvice(item, context = {}) {
+    const query = this.buildStylingQuery(item, context);
+    const searchResults = await this.search(query, {
+      num_results: 12,
+      freshness: 'month',
+    });
+
+    const advice = [];
+    const citations = [];
+
+    if (searchResults.fallback) {
+      searchResults.fallback.forEach((fb, idx) => {
+        const citation = {
+          id: `cit-fb-${idx}`,
+          title: fb.name,
+          url: 'https://www.vogue.com/fashion-trends',
+          snippet: fb.description || '',
+          source: 'vogue.com',
+          favicon: null,
+        };
+        citations.push(citation);
+        advice.push({
+          citationId: citation.id,
+          tips: [fb.description || 'Explore this trend for styling inspiration.'],
+        });
+      });
+      return { query, advice, citations };
+    }
+
+    if (searchResults.results?.web) {
+      searchResults.results.web.forEach((res, idx) => {
+        let source = 'fashion';
+        try {
+          if (res.url) source = new URL(res.url).hostname.replace('www.', '');
+        } catch {
+          // keep default
+        }
+        const citation = {
+          id: `cit-${idx}`,
+          title: res.title || '',
+          url: res.url || '',
+          snippet: res.description || res.snippet || '',
+          source,
+          favicon: res.favicon_url || null,
+        };
+        citations.push(citation);
+
+        const tips = this._extractTips(res.description || res.snippet || '');
+        advice.push({
+          citationId: citation.id,
+          tips: tips.length ? tips : [res.description || res.snippet || ''],
+        });
+      });
+    }
+
+    return { query, advice, citations };
+  }
+
+  /**
+   * Extract bullet-point style tips from a snippet (basic heuristic).
+   */
+  _extractTips(text) {
+    if (!text) return [];
+    const sentences = text.split(/[.!?]+/);
+    const tipKeywords = [
+      'wear', 'pair', 'style', 'match', 'combine', 'try', 'accessorize', 'layer',
+    ];
+    return sentences
+      .filter((s) => tipKeywords.some((kw) => s.toLowerCase().includes(kw)))
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 3);
+  }
+
+  /**
    * Extract top trend keyword from text (basic NLP).
    */
   _extractTrendKeywords(text) {

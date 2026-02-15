@@ -10,6 +10,10 @@ const tryonRoutes = require('./tryon.routes');
 const aiRoutes = require('./ai.routes');
 const imageProcessingRoutes = require('./imageProcessing.routes');
 const userPreferenceRoutes = require('./userPreference.routes');
+const analyticsRoutes = require('./analytics.routes');
+const declutterRoutes = require('./declutter.routes');
+const trendPredictionRoutes = require('./trendPrediction.routes');
+const sponsorsRoutes = require('./sponsors.routes');
 
 const router = express.Router();
 
@@ -24,5 +28,9 @@ router.use('/trends', trendsRoutes);
 router.use('/fashion', fashionResearchRoutes);
 router.use('/image', imageProcessingRoutes);
 router.use('/preferences', userPreferenceRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/declutter', declutterRoutes);
+router.use('/trend-prediction', trendPredictionRoutes);
+router.use('/', sponsorsRoutes);
 
 module.exports = router;

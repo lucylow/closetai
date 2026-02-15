@@ -1,0 +1,65 @@
+.akamai-deployment {
+  background: hsl(var(--muted) / 0.3);
+  border: 1px solid hsl(var(--border));
+  border-radius: 20px;
+  padding: 20px;
+  font-family: inherit;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.akamai-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  color: hsl(var(--foreground));
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.deployment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.deployment-item {
+  background: hsl(var(--card));
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid hsl(var(--border));
+}
+
+.deployment-item .label {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 4px;
+}
+
+.deployment-item .value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.akamai-footer {
+  margin-top: 20px;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  text-align: center;
+}
+
+.akamai-link {
+  color: hsl(var(--primary));
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.akamai-link:hover {
+  text-decoration: underline;
+}

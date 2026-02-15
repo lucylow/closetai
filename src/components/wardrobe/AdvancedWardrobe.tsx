@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutGrid, List, Filter, Trash2, Pencil } from "lucide-react";
+import { LayoutGrid, List, Filter, Trash2, Pencil, Sparkles } from "lucide-react";
 import { useAdvancedWardrobe } from "@/hooks/useAdvancedWardrobe";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ItemDetailsModal from "./ItemDetailsModal";
 import "./AdvancedWardrobe.css";
 
 const AdvancedWardrobe = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     wardrobe,
     loading,
@@ -308,6 +312,19 @@ const AdvancedWardrobe = () => {
                   alt={item.name}
                   onClick={() => handleItemClick(item)}
                 />
+                {user && (
+                  <button
+                    type="button"
+                    className="style-explorer-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/style/${item.id}`);
+                    }}
+                    title="Get styling ideas"
+                  >
+                    <Sparkles size={14} />
+                  </button>
+                )}
                 <div className="card-info">
                   <h4 onClick={() => handleItemClick(item)}>
                     {item.extractedAttributes?.color ?? item.color}{" "}
@@ -375,6 +392,16 @@ const AdvancedWardrobe = () => {
                 <td>{item.lastWornDate ?? "-"}</td>
                 <td>{item.purchaseDate ?? "-"}</td>
                 <td>
+                  {user && (
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      onClick={() => navigate(`/style/${item.id}`)}
+                      title="Get styling ideas"
+                    >
+                      <Sparkles size={14} />
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="icon-btn"

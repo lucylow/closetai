@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, Sparkles } from "lucide-react";
 import type { WardrobeItem } from "@/hooks/useAdvancedWardrobe";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -18,6 +20,8 @@ const ItemDetailsModal = ({
   onUpdate,
   onSave,
 }: ItemDetailsModalProps) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: item?.name ?? "",
@@ -134,6 +138,21 @@ const ItemDetailsModal = ({
                 <p className="text-xs text-muted-foreground">
                   Last worn: {item.lastWornDate || "Never"}
                 </p>
+                <div className="flex gap-2 flex-wrap">
+                {user && (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      onClose();
+                      navigate(`/style/${item.id}`);
+                    }}
+                    className="rounded-full gap-1.5"
+                  >
+                    <Sparkles size={14} />
+                    Get Styling Ideas
+                  </Button>
+                )}
                 {onSave && (
                   <Button
                     variant="outline"
@@ -152,6 +171,7 @@ const ItemDetailsModal = ({
                     Edit
                   </Button>
                 )}
+              </div>
               </>
             )}
           </div>

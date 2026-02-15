@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import Layout from "@/components/layout/Layout";
 
 import Onboarding from "./pages/Onboarding";
@@ -16,6 +17,8 @@ import Content from "./pages/Content";
 import Shopping from "./pages/Shopping";
 import Business from "./pages/Business";
 import TryOn from "./pages/TryOn";
+import Sponsors from "./pages/Sponsors";
+import StyleExplorer from "@/components/style/StyleExplorer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -26,6 +29,7 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <AuthProvider>
+  <OnboardingProvider>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <TooltipProvider>
@@ -43,6 +47,8 @@ const App = () => (
               <Route path="content" element={<Content />} />
               <Route path="shopping" element={<Shopping />} />
               <Route path="tryon" element={<TryOn />} />
+              <Route path="style/:itemId" element={<StyleExplorer />} />
+              <Route path="sponsors" element={<Sponsors />} />
               <Route path="business" element={<Business />} />
             </Route>
 
@@ -52,6 +58,7 @@ const App = () => (
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
+  </OnboardingProvider>
   </AuthProvider>
 );
 

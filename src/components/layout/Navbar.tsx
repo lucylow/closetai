@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Menu, X, Home, Shirt, Sparkles, TrendingUp, FileText, ShoppingBag, BarChart3, LogIn, LogOut, Scan } from "lucide-react";
+import { Sun, Moon, Menu, X, Home, Shirt, Sparkles, TrendingUp, FileText, ShoppingBag, BarChart3, LogIn, LogOut, Scan, Award } from "lucide-react";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnboarding } from "@/contexts/OnboardingContext";
 import { AuthDialog } from "@/components/AuthDialog";
 import "./navbar.css";
 
@@ -16,6 +17,7 @@ const navItems = [
   { path: "/content", label: "Content", icon: FileText, tourClass: "content-link" },
   { path: "/shopping", label: "Shopping", icon: ShoppingBag, tourClass: "shopping-link" },
   { path: "/tryon", label: "Try-On", icon: Scan, tourClass: "tryon-link" },
+  { path: "/sponsors", label: "Sponsors", icon: Award },
   { path: "/business", label: "Business", icon: BarChart3 },
 ];
 
@@ -24,6 +26,7 @@ const Navbar = () => {
   const [authOpen, setAuthOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
+  const { isComplete: onboardingComplete } = useOnboarding();
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -42,9 +45,20 @@ const Navbar = () => {
   return (
     <nav className="navbar" ref={menuRef}>
       <div className="navbar-container">
-        <NavLink to="/" className="logo" onClick={() => setIsOpen(false)}>
-          Closet<span>AI</span>
-        </NavLink>
+        <div className="flex items-center gap-2">
+          <NavLink to="/" className="logo" onClick={() => setIsOpen(false)}>
+            Closet<span>AI</span>
+          </NavLink>
+          {!onboardingComplete && (
+            <NavLink
+              to="/onboarding"
+              className="text-sm font-medium text-primary hover:underline hidden sm:inline"
+              onClick={() => setIsOpen(false)}
+            >
+              Get started
+            </NavLink>
+          )}
+        </div>
 
         <div className="nav-menu-desktop">
           {navItems.map((item) => (

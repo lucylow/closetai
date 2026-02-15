@@ -8,19 +8,23 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "openai": "^3.3.0",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "bull": "^4.16.5",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "file-type": "^21.3.0",
+    "form-data": "^4.0.5",
+    "get-image-colors": "^4.0.1",
     "ioredis": "^5.9.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "openai": "^3.3.0",
     "pg": "^8.11.3",
     "sequelize": "^6.35.1",
     "sharp": "^0.33.1",
+    "simple-statistics": "^7.8.8",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

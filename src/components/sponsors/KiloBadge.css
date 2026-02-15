@@ -1,0 +1,77 @@
+.kilo-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
+  font-family: inherit;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.kilo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.kilo-logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.kilo-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.kilo-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.kilo-badge .stat {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 12px;
+  text-align: center;
+}
+
+.kilo-badge .stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.kilo-badge .stat-label {
+  font-size: 0.8rem;
+  opacity: 0.95;
+}
+
+.kilo-footer {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  opacity: 0.95;
+}
+
+.kilo-link {
+  color: white;
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+}
+
+.kilo-link:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}

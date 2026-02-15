@@ -1,23 +1,33 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, RotateCcw, Shirt, CheckCircle, Flame, User, CloudSun } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Sparkles, RotateCcw, Shirt, CheckCircle, Flame, User, CloudSun, CloudRain, Calendar, Share2, Scan } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DEMO_WARDROBE, DEMO_TRENDS, OCCASIONS, CATEGORY_LABELS, dailyOutfits, type ClothingItem } from "@/lib/data";
+import { DEMO_WARDROBE, DEMO_TRENDS, OCCASIONS, CATEGORY_LABELS, DRESS_CODES, dailyOutfits, type ClothingItem } from "@/lib/data";
 import { useWardrobe } from "@/hooks/useWardrobe";
 import { useRecommendations } from "@/hooks/useRecommendations";
+import { useWeather } from "@/hooks/useWeather";
 import AdvancedOutfitSuggestions from "@/components/outfit/AdvancedOutfitSuggestions";
 import PersonalizedOutfitList from "@/components/outfit/PersonalizedOutfitList";
+import { toast } from "sonner";
 
 const Outfits = () => {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [occasion, setOccasion] = useState("Casual");
+  const [dressCode, setDressCode] = useState("Casual Friday");
   const [outfit, setOutfit] = useState<{ items: ClothingItem[]; trend: string; desc: string } | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const { items: wardrobeItems, isAuthenticated } = useWardrobe();
   const { dailyOutfits: apiOutfits, isLoading: outfitsLoading } = useRecommendations(occasion.toLowerCase());
+  const { tempF, condition, description, isLoading: weatherLoading } = useWeather();
   const items = isAuthenticated ? wardrobeItems : DEMO_WARDROBE;
   const todayPicks = isAuthenticated ? apiOutfits : dailyOutfits;
+
+  const filteredPicks = dressCode === "Any"
+    ? todayPicks
+    : todayPicks.filter((o) => o.occasion?.toLowerCase().includes(dressCode.split(" ")[0].toLowerCase()));
 
   const toggleItem = useCallback((id: string) => {
     setSelected((prev) => {
@@ -52,11 +62,60 @@ const Outfits = () => {
     setOutfit(null);
   };
 
+  const handleTryOn = (garmentIds: string[]) => {
+    navigate("/tryon", { state: { garmentIds } });
+  };
+
+  const handleAddToCalendar = (o: { items: ClothingItem[]; description?: string }) => {
+    toast.success("Outfit added to calendar");
+  };
+
+  const handleShare = (o: { items: ClothingItem[]; description?: string }) => {
+    const text = `Today I'm wearing ${o.items.map((i) => i.name).join(", ")}. ${o.description || ""} 👗✨`;
+    if (navigator.share) {
+      navigator.share({ title: "My outfit today", text, url: window.location.href })
+        .then(() => toast.success("Shared!")).catch(() => copyToClipboard(text));
+    } else {
+      copyToClipboard(text);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard! Share to Instagram.");
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold font-display gradient-text">AI Outfit Recommendations</h1>
         <p className="text-muted-foreground mt-1">Select items and let AI create the perfect outfit.</p>
+      </div>
+
+      {/* Today's Weather */}
+      <div className="glass-card p-4 flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-3">
+          {weatherLoading ? (
+            <div className="w-12 h-12 rounded-xl bg-muted animate-pulse" />
+          ) : (
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              {condition?.includes("rain") ? (
+                <CloudRain size={24} className="text-primary" />
+              ) : (
+                <CloudSun size={24} className="text-primary" />
+              )}
+            </div>
+          )}
+          <div>
+            <p className="text-sm font-medium">Today&apos;s Weather</p>
+            <p className="text-2xl font-bold">
+              {weatherLoading ? "—" : `${tempF}°F`}
+              {description && !weatherLoading && (
+                <span className="text-sm font-normal text-muted-foreground ml-1">({description})</span>
+              )}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -80,20 +139,40 @@ const Outfits = () => {
         </div>
       </div>
 
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-muted-foreground">Dress code</label>
+        <div className="flex flex-wrap gap-2">
+          {DRESS_CODES.map((dc) => (
+            <button
+              key={dc}
+              onClick={() => setDressCode(dc)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                dressCode === dc
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
+              }`}
+            >
+              {dc}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Daily outfit suggestions from AI */}
       <div className="glass-card p-6 space-y-4">
         <h3 className="font-semibold font-display flex items-center gap-2">
           <Sparkles size={18} className="text-primary" /> Today&apos;s Picks
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {(outfitsLoading ? [] : todayPicks).map((o) => {
+          {(outfitsLoading ? [] : filteredPicks).map((o) => {
             const outfitItems = Array.isArray(o.items) && o.items.length > 0 && typeof o.items[0] === "string"
               ? (o.items as string[]).map((id) => items.find((i) => i.id === id)).filter(Boolean) as ClothingItem[]
               : (o.items as ClothingItem[]);
+            const itemIds = outfitItems.map((i) => i.id);
             return (
               <div
                 key={o.id}
-                className="p-4 rounded-2xl bg-muted/50 space-y-2"
+                className="p-4 rounded-2xl bg-muted/50 space-y-2 group/card"
               >
                 <div className="flex gap-2 flex-wrap">
                   {outfitItems.map((item) => (
@@ -111,6 +190,32 @@ const Outfits = () => {
                   <span className="capitalize">{o.occasion}</span>
                   <span>·</span>
                   <span>{Math.round((o.totalScore ?? 0.8) * 100)}% match</span>
+                </div>
+                <div className="flex gap-2 mt-2 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 rounded-full gap-1 text-xs"
+                    onClick={() => handleTryOn(itemIds)}
+                  >
+                    <Scan size={12} /> Try-on
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 rounded-full gap-1 text-xs"
+                    onClick={() => handleAddToCalendar({ items: outfitItems, description: o.description })}
+                  >
+                    <Calendar size={12} /> Calendar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 rounded-full gap-1 text-xs"
+                    onClick={() => handleShare({ items: outfitItems, description: o.description })}
+                  >
+                    <Share2 size={12} /> Share
+                  </Button>
                 </div>
               </div>
             );

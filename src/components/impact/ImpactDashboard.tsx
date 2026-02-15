@@ -16,8 +16,9 @@ const ImpactDashboard = () => {
     <div className="impact-dashboard">
       <h2 className="impact-section-title">Real‑World Impact</h2>
       <p className="impact-section-subtitle">
-        ClosetAI is built on a foundation of peer‑reviewed research and industry
-        data.
+        ClosetAI is grounded in peer‑reviewed research and industry data. The
+        problems we solve—wardrobe underutilisation and decision fatigue—are
+        documented, measurable, and addressable.
       </p>
 
       <div className="impact-stats-grid">
@@ -73,10 +74,24 @@ const ImpactDashboard = () => {
       </div>
 
       <div className="impact-conclusion">
+        <h3 className="impact-conclusion-heading">How ClosetAI delivers</h3>
         <p>
-          By addressing the root causes of fashion waste and decision fatigue,
-          ClosetAI doesn't just help you look good – it helps you feel good and
-          shop smarter.
+          <strong>Problem:</strong> People own more clothes but wear them less
+          (33% utilisation decline). They face overwhelming choices (70% cart
+          abandonment) and experience decision fatigue that degrades judgment.
+        </p>
+        <p>
+          <strong>Solution:</strong> ClosetAI digitizes your wardrobe, extracts
+          fit and style, and combines occasion, weather, and trend data to
+          suggest outfits you'll actually wear. Virtual try‑on lets you
+          visualize before committing. Trend research keeps you fashion‑forward
+          without buying new.
+        </p>
+        <p>
+          <strong>Impact:</strong> Users wear more of what they own (addressing
+          up to 80% of low usage issues), make faster confident decisions
+          (reducing fatigue), and stay stylish sustainably. This isn't just a
+          clever demo—it's a solution to documented, measurable problems.
         </p>
       </div>
     </div>

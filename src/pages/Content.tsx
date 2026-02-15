@@ -4,6 +4,7 @@ import { Share2, Copy, Instagram, Twitter, Sparkles, CheckCircle, RefreshCw } fr
 import { Button } from "@/components/ui/button";
 import { DEMO_WARDROBE, generatedCaption, suggestedHashtags } from "@/lib/data";
 import AdvancedContentGenerator from "@/components/content/AdvancedContentGenerator";
+import PostTemplates from "@/components/content/PostTemplates";
 import { useWardrobe } from "@/hooks/useWardrobe";
 import { useContent } from "@/hooks/useContent";
 
@@ -195,6 +196,14 @@ const Content = () => {
             </>
           )}
         </div>
+      </div>
+
+      {/* Platform-specific Post Templates */}
+      <div className="mt-12 border-t border-border pt-8">
+        <PostTemplates
+          outfitItems={outfitDescription}
+          occasion="casual"
+        />
       </div>
 
       {/* Advanced Content Generator */}

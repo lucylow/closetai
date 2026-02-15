@@ -6,6 +6,7 @@ import { DEMO_TRENDS, fashionTrends } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import TrendExplorer from "@/components/trends/TrendExplorer";
 import TrendsWithCitations from "@/components/trends/TrendsWithCitations";
+import { YouComTrends } from "@/components/sponsors";
 
 const directionIcon = (d: string) => {
   if (d === "up") return <TrendingUp size={16} className="text-accent" />;
@@ -118,6 +119,9 @@ const TrendsPage = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* You.com enhanced trend research */}
+      <YouComTrends />
 
       {/* Trends with full citations (research-grade) */}
       <TrendsWithCitations />

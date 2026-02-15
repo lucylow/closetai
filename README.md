@@ -1,3 +1,20 @@
+# ClosetAI
+
+**DeveloperWeek 2026 Hackathon** — AI-powered personal stylist that helps you stay fashionable without constant shopping and reduces decision fatigue.
+
+## Real-World Impact
+
+ClosetAI is grounded in peer-reviewed research and industry data:
+
+| Impact | Evidence |
+|--------|----------|
+| **Stay fashionable without constant shopping** | Addressing fit, occasion, and style could mitigate up to **80%** of low usage issues (Torrens University 2025). Clothing utilisation has declined by **33%** in 15 years (PLATE2025). Personal factors explain **80%** of variance in sustainable clothing use (Cleaner & Responsible Consumption 2024). |
+| **Reduce decision fatigue** | **70%** of online fashion shoppers abandon carts due to overwhelm (Capital One 2025). AI personalization can reduce returns by **10–20%** and lift conversion by **20–40%** (RSM/Accenture 2025). AI-driven recommendations significantly reduce cognitive load (Journal of Retailing and Consumer Services 2025). |
+
+See [docs/HACK_IMPACT.md](docs/HACK_IMPACT.md) for the full research synthesis and references.
+
+---
+
 # Welcome to your Lovable project
 
 ## Project info

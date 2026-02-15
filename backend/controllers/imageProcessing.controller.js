@@ -16,11 +16,13 @@ async function startProcessing(req, res, next) {
 
   if (!redisAvailable || !imageQueue) {
     try {
-      const { processedBuffer, attributes, embedding } =
+      const { processedBuffer, attributes, embedding, mimeType } =
         await imageProcessingService.processUpload(file.buffer, file.originalname);
+      const ext = mimeType === 'image/png' ? 'png' : (file.originalname.split('.').pop() || 'jpg');
+      const uploadName = file.originalname.replace(/\.[^.]+$/, '') + '_processed.' + ext;
       const { url, key } = await linodeService.uploadFile(
         processedBuffer,
-        file.originalname,
+        uploadName,
         userId,
         'processed'
       );

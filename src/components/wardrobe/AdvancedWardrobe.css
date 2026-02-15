@@ -163,6 +163,25 @@
   margin-top: 8px;
 }
 
+.style-explorer-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 6px;
+  border-radius: 50%;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 1;
+}
+
+.style-explorer-btn:hover {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+
 .card-info {
   margin-top: 8px;
 }

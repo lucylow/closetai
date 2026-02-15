@@ -1,6 +1,7 @@
 const User = require('./User');
 const WardrobeItem = require('./WardrobeItem');
 const Outfit = require('./Outfit');
+const OutfitHistory = require('./OutfitHistory');
 const Rating = require('./Rating');
 const Draft = require('./Draft');
 const UserPreference = require('./UserPreference');
@@ -10,6 +11,11 @@ WardrobeItem.belongsTo(User, { foreignKey: 'userId' });
 
 User.hasMany(Outfit, { foreignKey: 'userId', as: 'outfits' });
 Outfit.belongsTo(User, { foreignKey: 'userId' });
+
+Outfit.hasMany(OutfitHistory, { foreignKey: 'outfitId', as: 'history' });
+OutfitHistory.belongsTo(Outfit, { foreignKey: 'outfitId' });
+User.hasMany(OutfitHistory, { foreignKey: 'userId', as: 'wearHistory' });
+OutfitHistory.belongsTo(User, { foreignKey: 'userId' });
 
 User.hasMany(Rating, { foreignKey: 'userId' });
 Outfit.hasMany(Rating, { foreignKey: 'outfitId' });
@@ -26,6 +32,7 @@ module.exports = {
   User,
   WardrobeItem,
   Outfit,
+  OutfitHistory,
   Rating,
   Draft,
   UserPreference,

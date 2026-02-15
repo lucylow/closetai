@@ -34,18 +34,22 @@ try {
 
     try {
       updateProgress('validate');
+      const { validateImage, resize } = require('../image-pipeline/utils/imageHelpers');
+      const validated = await validateImage(fileBuffer, fileName);
+      if (!validated.valid) {
+        throw new Error(validated.error || 'Invalid image');
+      }
+      const resizedBuffer = await resize(fileBuffer, 1024);
 
       updateProgress('remove-bg');
-      const ext = (fileName || '').split('.').pop() || 'jpg';
-      const processedBuffer = await imageProcessingService.removeBackground(fileBuffer, ext);
+      const ext = validated.extension || (fileName || '').split('.').pop() || 'jpg';
+      const processedBuffer = await imageProcessingService.removeBackground(resizedBuffer, ext);
 
       updateProgress('extract');
-      const attributes = await imageProcessingService.extractAttributes(processedBuffer);
+      const attributes = await imageProcessingService.extractAttributes(processedBuffer, fileName);
 
       updateProgress('embed');
-      const embedding = imageProcessingService.generateEmbedding
-        ? await imageProcessingService.generateEmbedding(processedBuffer)
-        : null;
+      const embedding = await imageProcessingService.generateEmbedding(processedBuffer);
 
       updateProgress('save');
       const { url, key } = await linodeService.uploadFile(

@@ -1,6 +1,7 @@
 const { WardrobeItem } = require('../models');
 const linodeService = require('../services/linode.service');
 const imageProcessingService = require('../services/imageProcessing.service');
+const { findSimilarItems } = require('../utils/embeddingUtils');
 const { sequelize } = require('../config/database');
 const { Op } = require('sequelize');
 
@@ -237,6 +238,31 @@ const getStats = async (req, res, next) => {
   }
 };
 
+const findSimilar = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 10, 20);
+
+    const targetItem = await WardrobeItem.findOne({ where: { id, userId } });
+    if (!targetItem) return res.status(404).json({ error: 'Item not found' });
+
+    const targetEmbedding = targetItem.embedding;
+    if (!targetEmbedding || !Array.isArray(targetEmbedding)) {
+      return res.json([]);
+    }
+
+    const items = await WardrobeItem.findAll({
+      where: { userId, id: { [Op.ne]: id } },
+    });
+
+    const similar = findSimilarItems(items, targetEmbedding, limit);
+    res.json(similar);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   addItem,
   listItems,
@@ -247,4 +273,5 @@ module.exports = {
   bulkUpdateTags,
   recordWear,
   getStats,
+  findSimilar,
 };

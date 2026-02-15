@@ -11,6 +11,7 @@ const {
   bulkUpdateTags,
   recordWear,
   getStats,
+  findSimilar,
 } = require('../controllers/wardrobe.controller');
 const router = express.Router();
 
@@ -21,6 +22,7 @@ router.get('/', listItems);
 router.get('/stats', getStats);
 router.delete('/bulk', bulkDelete);
 router.patch('/bulk/tags', bulkUpdateTags);
+router.get('/:id/similar', findSimilar);
 router.get('/:id', getItem);
 router.patch('/:id', updateItem);
 router.delete('/:id', deleteItem);

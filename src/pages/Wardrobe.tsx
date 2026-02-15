@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, Grid3X3, List, TrendingUp, Trash2, X, Upload, Shirt } from "lucide-react";
+import { Plus, Search, Filter, Grid3X3, List, TrendingUp, Trash2, X, Upload, Shirt, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DEMO_WARDROBE, CATEGORY_LABELS, type ClothingItem } from "@/lib/data";
@@ -173,6 +173,15 @@ const Wardrobe = () => {
                 className="glass-card p-5 text-center relative group"
               >
                 <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => navigate(`/style/${item.id}`)}
+                      className="p-1 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary"
+                      title="Get styling ideas"
+                    >
+                      <Sparkles size={14} />
+                    </button>
+                  )}
                   <button
                     onClick={() => navigate("/tryon", { state: { garmentIds: [item.id] } })}
                     className="p-1 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary"
@@ -228,6 +237,15 @@ const Wardrobe = () => {
                   <TrendingUp size={12} className="text-accent" /> {item.trendScore}
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => navigate(`/style/${item.id}`)}
+                      className="p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary"
+                      title="Get styling ideas"
+                    >
+                      <Sparkles size={14} />
+                    </button>
+                  )}
                   <button
                     onClick={() => navigate("/tryon", { state: { garmentIds: [item.id] } })}
                     className="p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary"

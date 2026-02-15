@@ -47,6 +47,17 @@ export const TRENDS = [
 
 export const OCCASIONS = ["Casual", "Work", "Date Night", "Party", "Outdoor", "Formal"];
 
+/** Dress codes for filtering outfit suggestions (e.g. "Casual Friday") */
+export const DRESS_CODES = [
+  "Any",
+  "Casual Friday",
+  "Business Casual",
+  "Smart Casual",
+  "Business Formal",
+  "Creative",
+  "Athleisure",
+];
+
 export const CATEGORY_LABELS: Record<string, string> = {
   top: "Tops",
   bottom: "Bottoms",

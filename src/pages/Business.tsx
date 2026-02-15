@@ -161,6 +161,17 @@ const Business = () => {
             investable.
           </p>
         </div>
+        <div className="rounded-2xl border-l-4 border-emerald-500/80 bg-emerald-500/5 p-5 space-y-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white">
+            📊 Evidence-Based Impact
+          </span>
+          <p className="text-muted-foreground leading-relaxed">
+            Peer-reviewed research validates our impact thesis: addressing fit, occasion, and style could mitigate{" "}
+            <strong className="text-foreground">80% of low usage issues</strong> in clothing (Torrens University 2025). AI personalization reduces return rates by{" "}
+            <strong className="text-foreground">10–20%</strong> and lifts conversion by{" "}
+            <strong className="text-foreground">20–40%</strong> (RSM/Accenture 2025). ClosetAI directly addresses these documented problems.
+          </p>
+        </div>
       </motion.div>
 
       {/* Market Size */}
