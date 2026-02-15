@@ -144,8 +144,6 @@ export function usePerfectCorp() {
         const url = data.url || data.generatedImageUrl;
         if (url) setLastUrl(url);
         return data;
-      } catch (err) {
-        throw err;
       } finally {
         setLoading(false);
       }
