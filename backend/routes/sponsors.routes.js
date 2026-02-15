@@ -1,18 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-/**
- * GET /api/kilo/stats
- * Development stats for "Built with Kilo Code" badge (mock)
- */
-router.get('/kilo/stats', (req, res) => {
-  res.json({
-    prompts: 47,
-    linesOfCode: 15200,
-    commits: 34,
-    timeSaved: '12 hours',
-  });
-});
+// Kilo stats moved to /api/kilo/stats (kilo.routes.js)
 
 /**
  * GET /api/akamai/info

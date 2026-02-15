@@ -1,21 +1,81 @@
+/**
+ * Perfect Corp service: VTON, text-to-image, measurements.
+ * Includes caching (avoid burning hackathon credits), preprocessing, retries, credit-aware errors.
+ */
+const crypto = require('crypto');
+const FormData = require('form-data');
+const sharp = require('sharp');
+const NodeCache = require('node-cache');
+const { postFormWithRetry, postJsonWithRetry } = require('../lib/perfectCorpClient');
 const env = require('../config/env');
+const linodeService = require('./linode.service');
+
+const cache = new NodeCache({ stdTTL: 60 * 60 * 6 }); // 6h TTL for VTON results
+
+function sha256(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
 
 class PerfectCorpService {
+  constructor() {
+    this.base = env.perfectCorp?.baseUrl || 'https://api.perfectcorp.com';
+    this.apiKey = env.perfectCorp?.apiKey;
+  }
+
+  /**
+   * Preprocess images: resize, convert to PNG for consistent API input.
+   */
+  async preprocessImageToPNG(inputBuffer, { maxWidth = 1200 } = {}) {
+    let img = sharp(inputBuffer).rotate();
+    const metadata = await img.metadata();
+    if (metadata.width && metadata.width > maxWidth) {
+      img = img.resize({ width: maxWidth });
+    }
+    return img.png({ quality: 90 }).toBuffer();
+  }
+
+  /**
+   * Virtual try-on: composite garment onto model photo.
+   * Uses caching to avoid double-charges for identical inputs.
+   */
   async virtualTryOn(modelImageBuffer, garmentImageBuffer, category = 'top', fit = 'standard') {
-    if (!env.perfectCorp?.apiKey) {
-      // Demo mode: return model image as-is (simulated try-on)
+    if (!this.apiKey) {
       return modelImageBuffer;
     }
+
+    const options = { category, fit };
+    const [modelPng, garmentPng] = await Promise.all([
+      this.preprocessImageToPNG(modelImageBuffer, { maxWidth: 1400 }),
+      this.preprocessImageToPNG(garmentImageBuffer, { maxWidth: 1200 }),
+    ]);
+
+    const key = `vton:${sha256(Buffer.concat([modelPng, garmentPng, Buffer.from(JSON.stringify(options))]))}`;
+    const cached = cache.get(key);
+    if (cached) {
+      return cached;
+    }
+
     const form = new FormData();
-    form.append('model_image', modelImageBuffer, { filename: 'model.jpg' });
-    form.append('garment_image', garmentImageBuffer, { filename: 'garment.png' });
-    form.append('category', category);
-    form.append('fit', fit);
-    const response = await axios.post(`${BASE_URL}/vton`, form, {
-      headers: { ...form.getHeaders(), Authorization: `Bearer ${env.perfectCorp.apiKey}` },
-      responseType: 'arraybuffer',
-    });
-    return Buffer.from(response.data);
+    form.append('model_image', modelPng, { filename: 'model.png' });
+    form.append('garment_image', garmentPng, { filename: 'garment.png' });
+    form.append('category', options.category);
+    form.append('fit', options.fit);
+
+    try {
+      const resp = await postFormWithRetry('/vton', form, { responseType: 'arraybuffer' });
+      const imgBuf = Buffer.from(resp.data);
+      cache.set(key, imgBuf, 60 * 60 * 24); // 24h cache
+      return imgBuf;
+    } catch (err) {
+      if (err?.response?.status === 402) {
+        const credits = err.response.headers['x-credit-count'] || 'unknown';
+        const e = new Error(`Perfect Corp credits exhausted (X-Credit-Count=${credits})`);
+        e.code = 'PERFECTCREDITS';
+        e.statusCode = 402;
+        throw e;
+      }
+      throw err;
+    }
   }
 
   async virtualTryOnMulti(modelImageBuffer, garmentBuffers, categories) {
@@ -31,89 +91,75 @@ class PerfectCorpService {
   }
 
   /**
-   * Body measurement approximation from a user photo.
-   * Calls Perfect Corp measure API when configured; otherwise uses heuristic fallback.
+   * Body measurement approximation from user photo.
    */
   async estimateMeasurements(imageBuffer) {
-    if (env.perfectCorp?.apiKey) {
-      try {
-        const form = new FormData();
-        form.append('image', imageBuffer, { filename: 'user.jpg' });
-        const response = await axios.post(`${BASE_URL}/measure`, form, {
-          headers: { ...form.getHeaders(), Authorization: `Bearer ${env.perfectCorp.apiKey}` },
-        });
-        return response.data;
-      } catch (err) {
-        // Fall through to heuristic fallback
-      }
-    }
-    return {
-      height: 170,
-      weight: 65,
-      bust: 88,
-      chest: 90,
-      waist: 72,
-      hips: 95,
-      shoulder: 42,
-      inseam: 78,
-    };
-  }
-
-  /**
-   * Generate a shareable URL for a try-on result.
-   * Uploads to Linode Object Storage (or local uploads) and returns public URL.
-   */
-  async createShareableResult(imageBuffer) {
-    const fileName = `tryon_${Date.now()}.png`;
-    const { url, key } = await linodeService.uploadFile(
-      imageBuffer,
-      fileName,
-      'shared',
-      'tryon'
-    );
-    const baseUrl = process.env.API_BASE_URL || process.env.FRONTEND_URL || '';
-    const shareUrl = url.startsWith('http') ? url : (baseUrl ? `${baseUrl.replace(/\/$/, '')}${url}` : url);
-    return { url: shareUrl, key, expiresAt: Date.now() + 86400000 };
-  }
-
-  /**
-   * Generate a fashion image from a text prompt (Perfect Corp text-to-image).
-   * Falls back to placeholder when API key is missing.
-   * @param {string} prompt - e.g. "A casual summer outfit with a white linen shirt"
-   * @param {string} style - 'photorealistic', 'sketch', 'watercolor'
-   * @returns {Promise<Buffer>} Generated image buffer (PNG)
-   */
-  async generateImage(prompt, style = 'photorealistic') {
-    if (!env.perfectCorp?.apiKey) {
-      return await this._generatePlaceholderImage(prompt, style);
+    if (!this.apiKey) {
+      return {
+        height: 170,
+        weight: 65,
+        bust: 88,
+        chest: 90,
+        waist: 72,
+        hips: 95,
+        shoulder: 42,
+        inseam: 78,
+      };
     }
     try {
-      const axios = require('axios');
-      const response = await axios.post(
-        'https://api.perfectcorp.com/generate',
-        {
-          prompt: `Fashion photography, ${prompt}, ${style} style, high quality`,
-          style,
-          num_images: 1,
-          size: '1024x1024',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${env.perfectCorp.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-          responseType: 'arraybuffer',
-          timeout: 30000,
-        }
-      );
-      return Buffer.from(response.data);
+      const form = new FormData();
+      form.append('image', imageBuffer, { filename: 'user.jpg' });
+      const resp = await postFormWithRetry('/measure', form, { responseType: 'json' });
+      return resp.data;
+    } catch {
+      return {
+        height: 170,
+        weight: 65,
+        bust: 88,
+        chest: 90,
+        waist: 72,
+        hips: 95,
+        shoulder: 42,
+        inseam: 78,
+      };
+    }
+  }
+
+  /**
+   * Generate fashion image from text prompt (Perfect Corp text-to-image).
+   */
+  async generateImage(prompt, style = 'photorealistic') {
+    if (!this.apiKey) {
+      return this._generatePlaceholderImage(prompt, style);
+    }
+    try {
+      const body = {
+        prompt: `Fashion photography, ${prompt}, ${style} style, high quality`,
+        style,
+        num_images: 1,
+        size: '1024x1024',
+      };
+      const resp = await postJsonWithRetry('/generate', body, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      });
+      const ct = resp.headers['content-type'] || '';
+      if (ct.includes('application/json')) {
+        return JSON.parse(Buffer.from(resp.data).toString('utf8'));
+      }
+      return Buffer.from(resp.data);
     } catch (e) {
-      return await this._generatePlaceholderImage(prompt, style);
+      if (e?.response?.status === 402) {
+        const err = new Error('Out of API credits. Please try again later.');
+        err.code = 'PERFECTCREDITS';
+        err.statusCode = 402;
+        throw err;
+      }
+      return this._generatePlaceholderImage(prompt, style);
     }
   }
 
   async _generatePlaceholderImage(prompt, style) {
-    const sharp = require('sharp');
     const svg = `
       <svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
         <rect width="512" height="512" fill="#f5f0fa"/>
@@ -123,6 +169,22 @@ class PerfectCorpService {
       </svg>
     `;
     return sharp(Buffer.from(svg)).png().toBuffer();
+  }
+
+  /**
+   * Upload try-on result to storage and return shareable URL.
+   */
+  async createShareableResult(imageBuffer, filenamePrefix = 'tryon') {
+    const fileName = `${filenamePrefix}_${Date.now()}.png`;
+    const { url, key } = await linodeService.uploadFile(
+      imageBuffer,
+      fileName,
+      'shared',
+      filenamePrefix === 'ai_gen' ? 'generated' : 'tryon'
+    );
+    const baseUrl = process.env.API_BASE_URL || process.env.FRONTEND_URL || '';
+    const shareUrl = url.startsWith('http') ? url : (baseUrl ? `${baseUrl.replace(/\/$/, '')}${url}` : url);
+    return { url: shareUrl, key, expiresAt: Date.now() + 86400000 };
   }
 }
 

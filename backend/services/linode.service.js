@@ -60,6 +60,38 @@ class LinodeStorageService {
     return { url, key };
   }
 
+  /**
+   * Upload a buffer with a custom key (for Kilo agent logs, results, etc.)
+   * @param {Buffer} buffer
+   * @param {string} key - Full key path (e.g. 'kilo-agent-logs/uuid.txt')
+   * @param {string} contentType - MIME type
+   * @returns {Promise<{url:string,key:string}>}
+   */
+  async uploadBuffer(buffer, key, contentType = 'application/octet-stream') {
+    if (this.useLocal) {
+      const dir = path.join(UPLOADS_DIR, path.dirname(key));
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(UPLOADS_DIR, key), buffer);
+      return { url: `/uploads/${key}`, key };
+    }
+    const { PutObjectCommand } = require('@aws-sdk/client-s3');
+    const command = new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      Body: buffer,
+      ContentType: contentType,
+      ACL: 'public-read',
+      Metadata: {
+        uploadDate: new Date().toISOString(),
+      },
+    });
+    await this.client.send(command);
+    const endpointUrl = env.linode.endpoint || '';
+    const host = endpointUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const url = host ? `https://${this.bucket}.${host}/${key}` : `${endpointUrl}/${this.bucket}/${key}`;
+    return { url, key };
+  }
+
   async deleteFile(key) {
     if (this.useLocal) {
       const filePath = path.join(UPLOADS_DIR, key);

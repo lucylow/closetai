@@ -13,6 +13,10 @@ ClosetAI is grounded in peer-reviewed research and industry data:
 
 See [docs/HACK_IMPACT.md](docs/HACK_IMPACT.md) for the full research synthesis and references.
 
+## Akamai (Linode) GPU Deployment
+
+Deploy ClosetAI on Akamai's Linode with GPU acceleration for AI workloads. See [docs/AKAMAI_DEPLOYMENT.md](docs/AKAMAI_DEPLOYMENT.md) for the complete guide.
+
 ---
 
 # Welcome to your Lovable project

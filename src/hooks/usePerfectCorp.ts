@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useState, useCallback } from "react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
@@ -26,36 +26,128 @@ export interface ShareResponse {
   expiresAt?: number;
 }
 
+export interface TryOnResponse {
+  url?: string;
+  key?: string;
+  expiresAt?: number;
+}
+
+export interface GenerateImageResponse {
+  url?: string;
+  generatedImageUrl?: string;
+}
+
 export function usePerfectCorp() {
+  const [loading, setLoading] = useState(false);
+  const [lastUrl, setLastUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const virtualTryOn = useCallback(
     async (
       userPhoto: Blob,
       garmentImage: Blob,
       category: string,
-      fit = "standard"
-    ): Promise<Blob> => {
+      fit = "standard",
+      options?: { returnShareableUrl?: boolean }
+    ): Promise<Blob | TryOnResponse> => {
+      setLoading(true);
+      setError(null);
       try {
         const form = new FormData();
         form.append("model_image", userPhoto, "model.jpg");
         form.append("garment_image", garmentImage, "garment.jpg");
         form.append("category", category);
         form.append("fit", fit);
-        const res = await fetch(`${API_BASE}/tryon`, {
+        if (options?.returnShareableUrl) {
+          form.append("share", "true");
+        }
+
+        const url = `${API_BASE}/tryon${options?.returnShareableUrl ? "?share=true" : ""}`;
+        const res = await fetch(url, {
           method: "POST",
           headers: getAuthHeaders(),
           body: form,
         });
+
+        if (res.status === 402) {
+          const data = await res.json().catch(() => ({}));
+          const msg =
+            data?.error || "API credits exhausted for Perfect Corp — cannot generate try-on right now.";
+          setError(msg);
+          throw new Error(msg);
+        }
+
+        if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
+          const data = await res.json();
+          const shareUrl = data.url;
+          if (shareUrl) setLastUrl(shareUrl);
+          return data;
+        }
+
         if (res.ok && res.headers.get("content-type")?.includes("image")) {
           return await res.blob();
         }
+
         if (res.status === 503) {
           await new Promise((r) => setTimeout(r, 1500));
           return userPhoto;
         }
-        throw new Error("Try-on failed");
-      } catch {
-        await new Promise((r) => setTimeout(r, 1500));
-        return userPhoto;
+
+        const data = await res.json().catch(() => ({}));
+        const errMsg = (data as { error?: string })?.error || res.statusText || "Try-on failed";
+        setError(errMsg);
+        throw new Error(errMsg);
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("credits")) {
+          setError(err.message);
+        }
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  const generateImage = useCallback(
+    async (prompt: string, style = "photorealistic"): Promise<GenerateImageResponse> => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`${API_BASE}/tryon/generate-image`, {
+          method: "POST",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json",
+          } as HeadersInit,
+          body: JSON.stringify({ prompt, style }),
+        });
+
+        if (res.status === 402) {
+          const data = await res.json().catch(() => ({}));
+          const msg =
+            (data as { error?: string })?.error ||
+            "API credits exhausted — cannot generate image right now.";
+          setError(msg);
+          throw new Error(msg);
+        }
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          const errMsg =
+            (data as { error?: string })?.error || res.statusText || "Generation failed";
+          setError(errMsg);
+          throw new Error(errMsg);
+        }
+
+        const data = (await res.json()) as GenerateImageResponse;
+        const url = data.url || data.generatedImageUrl;
+        if (url) setLastUrl(url);
+        return data;
+      } catch (err) {
+        throw err;
+      } finally {
+        setLoading(false);
       }
     },
     []
@@ -76,7 +168,6 @@ export function usePerfectCorp() {
     } catch {
       // Fall through to fallback
     }
-    // Fallback when API unavailable
     await new Promise((r) => setTimeout(r, 800));
     return {
       height: 170,
@@ -110,5 +201,16 @@ export function usePerfectCorp() {
     return { url, expiresAt: Date.now() + 86400000 };
   }, []);
 
-  return { virtualTryOn, estimateMeasurements, shareTryOn };
+  const clearError = useCallback(() => setError(null), []);
+
+  return {
+    loading,
+    error,
+    lastUrl,
+    virtualTryOn,
+    generateImage,
+    estimateMeasurements,
+    shareTryOn,
+    clearError,
+  };
 }

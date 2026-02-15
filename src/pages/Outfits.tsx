@@ -9,6 +9,7 @@ import { useRecommendations } from "@/hooks/useRecommendations";
 import { useWeather } from "@/hooks/useWeather";
 import AdvancedOutfitSuggestions from "@/components/outfit/AdvancedOutfitSuggestions";
 import PersonalizedOutfitList from "@/components/outfit/PersonalizedOutfitList";
+import TrendAwareOutfits from "@/components/outfit/TrendAwareOutfits";
 import { toast } from "sonner";
 
 const Outfits = () => {
@@ -352,7 +353,19 @@ const Outfits = () => {
         <AdvancedOutfitSuggestions />
       </div>
 
-      {/* Trend-Aware Outfits (personalized with citations) */}
+      {/* Trend-Aware Outfits (You.com real-time search) */}
+      <div className="mt-12 border-t border-border pt-8">
+        <h2 className="text-xl font-semibold font-display mb-4">Trend-Aware Outfit Generator</h2>
+        <p className="text-muted-foreground mb-4 text-sm">
+          Generate outfit recommendations based on current fashion trends from You.com.
+        </p>
+        <TrendAwareOutfits
+          wardrobe={items}
+          onOutfitSelect={(outfit) => console.log("Selected outfit:", outfit)}
+        />
+      </div>
+
+      {/* Personalized Trend Outfits (requires sign-in) */}
       <div className="mt-12 border-t border-border pt-8">
         <PersonalizedOutfitList />
       </div>

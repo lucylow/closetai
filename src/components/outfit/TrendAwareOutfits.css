@@ -1,0 +1,11 @@
+.trend-aware-outfits .outfit-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.trend-insights-banner {
+  border-radius: 1.25rem;
+}
+
+.insights-icon {
+  flex-shrink: 0;
+}

@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars and fill in your values
+# terraform.tfvars is gitignored - never commit secrets
+
+linode_token                   = "your-linode-api-token"
+region                         = "us-sea"
+object_storage_cluster         = "us-east-1"
+cluster_label                  = "closetai-lke"
+gpu_node_count                 = 2
+cpu_node_count                 = 3
+object_storage_expiration_days  = 30
+
+# Set object_storage_expiration_days = 0 to disable lifecycle expiration

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wardrobe-frontend
+  namespace: wardrobe-stylist
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wardrobe-frontend
+  template:
+    metadata:
+      labels:
+        app: wardrobe-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: wardrobe-stylist/frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_API_URL
+              value: "/api"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wardrobe-frontend
+  namespace: wardrobe-stylist
+spec:
+  selector:
+    app: wardrobe-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP

@@ -38,6 +38,11 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('free', 'premium', 'enterprise'),
     defaultValue: 'free',
   },
+  stripeCustomerId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'stripe_customer_id',
+  },
 }, {
   timestamps: true,
   underscored: true,

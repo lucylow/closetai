@@ -1,6 +1,7 @@
 const env = require('../config/env');
 
 let redisPublisher = null;
+let redisClient = null;
 
 function getPublisher() {
   if (!redisPublisher) {
@@ -55,4 +56,53 @@ function subscribe(channel, callback) {
   };
 }
 
-module.exports = { getRedis: () => ({ redisPublisher: getPublisher() }), publish, subscribe };
+function getClient() {
+  if (!redisClient) {
+    try {
+      const Redis = require('ioredis');
+      redisClient = new Redis({
+        host: env.redis?.host || 'localhost',
+        port: env.redis?.port || 6379,
+        retryStrategy: () => null,
+        maxRetriesPerRequest: 1,
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+  return redisClient;
+}
+
+async function get(key) {
+  const client = getClient();
+  if (!client) return null;
+  try {
+    return await client.get(key);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function set(key, value, ttlSeconds) {
+  const client = getClient();
+  if (!client) return false;
+  try {
+    if (ttlSeconds) {
+      await client.setex(key, ttlSeconds, value);
+    } else {
+      await client.set(key, value);
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+module.exports = {
+  getRedis: () => ({ redisPublisher: getPublisher() }),
+  publish,
+  subscribe,
+  getClient,
+  get,
+  set,
+};

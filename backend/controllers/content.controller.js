@@ -80,6 +80,12 @@ const generateImage = async (req, res, next) => {
     res.set('Content-Type', 'image/png');
     res.send(imageBuffer);
   } catch (err) {
+    if (err.statusCode === 402) {
+      return res.status(402).json({
+        error: 'Out of API credits. Please try again later.',
+        hint: 'Sign up at yce.perfectcorp.com for free credits.',
+      });
+    }
     next(err);
   }
 };

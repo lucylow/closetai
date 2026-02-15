@@ -34,12 +34,32 @@ module.exports = {
   perfectCorp: {
     apiKey: process.env.PERFECT_CORP_API_KEY,
     apiSecret: process.env.PERFECT_CORP_API_SECRET,
+    baseUrl: process.env.PERFECT_CORP_BASE_URL || 'https://api.perfectcorp.com',
   },
-  youcom: { apiKey: process.env.YOUCOM_API_KEY },
+  youcom: {
+    apiKey: process.env.YOUCOM_API_KEY,
+    baseUrl: process.env.YOUCOM_BASE_URL || 'https://api.ydc-index.io/v1',
+  },
   removeBg: { apiKey: process.env.REMOVE_BG_API_KEY },
   openWeatherMap: { apiKey: process.env.OPENWEATHERMAP_API_KEY },
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    url: process.env.REDIS_URL,
+  },
+  kilo: {
+    apiKey: process.env.KILO_API_KEY,
+    gatewayBase: process.env.KILO_GATEWAY_BASE || 'https://api.kilo.ai/api/gateway',
+    timeoutMs: parseInt(process.env.KILO_TIMEOUT_MS || '30000', 10),
+  },
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+  },
+  segment: {
+    writeKey: process.env.SEGMENT_WRITE_KEY,
+  },
+  admin: {
+    token: process.env.ADMIN_TOKEN,
   },
 };

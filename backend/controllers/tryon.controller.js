@@ -1,4 +1,5 @@
 const perfectCorpService = require('../services/perfectCorp.service');
+const linodeService = require('../services/linode.service');
 const { User } = require('../models');
 const multer = require('multer');
 const path = require('path');
@@ -43,9 +44,23 @@ const uploadSingle = multer({
   },
 });
 
+const uploadVisualize = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) cb(null, true);
+    else cb(new Error('Only images allowed'));
+  },
+}).fields([
+  { name: 'userPhoto', maxCount: 1 },
+  { name: 'topImage', maxCount: 1 },
+  { name: 'bottomImage', maxCount: 1 },
+]);
+
 /**
  * POST /api/tryon
- * Virtual try-on: overlay garment on model photo using Perfect Corp API
+ * Virtual try-on: overlay garment on model photo using Perfect Corp API.
+ * Query ?share=true returns shareable URL instead of streaming image.
  */
 async function virtualTryOn(req, res, next) {
   upload(req, res, async (err) => {
@@ -53,6 +68,8 @@ async function virtualTryOn(req, res, next) {
     const modelFile = req.files?.model_image?.[0];
     const garmentFile = req.files?.garment_image?.[0];
     const category = req.body?.category || 'top';
+    const fit = req.body?.fit || 'standard';
+    const returnShareableUrl = req.query?.share === 'true' || req.body?.share === 'true';
 
     if (!modelFile || !garmentFile) {
       return res.status(400).json({ error: 'model_image and garment_image required' });
@@ -62,11 +79,27 @@ async function virtualTryOn(req, res, next) {
       const resultBuffer = await perfectCorpService.virtualTryOn(
         modelFile.buffer,
         garmentFile.buffer,
-        category
+        category,
+        fit
       );
-      res.set('Content-Type', 'image/jpeg');
+
+      if (returnShareableUrl) {
+        const { url, key, expiresAt } = await perfectCorpService.createShareableResult(
+          resultBuffer,
+          'vton_result'
+        );
+        return res.json({ url, key, expiresAt });
+      }
+
+      res.set('Content-Type', 'image/png');
       res.send(resultBuffer);
     } catch (e) {
+      if (e.code === 'PERFECTCREDITS' || e.statusCode === 402) {
+        return res.status(402).json({
+          error: 'Out of API credits. Please try again later.',
+          hint: 'Sign up at yce.perfectcorp.com for free credits.',
+        });
+      }
       if (e.message?.includes('not configured')) {
         return res.status(503).json({
           error: 'Virtual try-on service not configured',
@@ -105,6 +138,12 @@ async function virtualTryOnMulti(req, res, next) {
       res.set('Content-Type', 'image/png');
       res.send(resultBuffer);
     } catch (e) {
+      if (e.statusCode === 402) {
+        return res.status(402).json({
+          error: 'Out of API credits. Please try again later.',
+          hint: 'Sign up at yce.perfectcorp.com for free credits.',
+        });
+      }
       if (e.message?.includes('not configured')) {
         return res.status(503).json({
           error: 'Virtual try-on service not configured',
@@ -149,6 +188,79 @@ async function estimateMeasurements(req, res, next) {
 }
 
 /**
+ * POST /api/tryon/visualize-outfit
+ * Wardrobe stylist flow: VTON (top + optional bottom) + optional AI-generated social post image.
+ * Combines Virtual Try-On and AI Text-to-Image APIs.
+ */
+async function visualizeOutfit(req, res, next) {
+  uploadVisualize(req, res, async (err) => {
+    if (err) return next(err);
+    const userPhoto = req.files?.userPhoto?.[0];
+    const topImage = req.files?.topImage?.[0];
+    const bottomImage = req.files?.bottomImage?.[0];
+    const outfitDescription = req.body?.outfitDescription || 'A casual fashion look';
+    const generateSocialImage = req.body?.generateSocialImage === 'true' || req.body?.generateSocialImage === true;
+
+    if (!userPhoto || !topImage) {
+      return res.status(400).json({
+        error: 'userPhoto and topImage required',
+        hint: 'Upload your photo and at least the top garment.',
+      });
+    }
+
+    try {
+      // Step 1: Virtual try-on for top
+      let vtonBuffer = await perfectCorpService.virtualTryOn(
+        userPhoto.buffer,
+        topImage.buffer,
+        'top'
+      );
+
+      // Step 2: If bottom provided, chain VTON
+      if (bottomImage) {
+        vtonBuffer = await perfectCorpService.virtualTryOn(
+          vtonBuffer,
+          bottomImage.buffer,
+          'bottom'
+        );
+      }
+
+      // Step 3: Upload VTON result and get URL
+      const { url: vtonResultUrl } = await perfectCorpService.createShareableResult(vtonBuffer);
+
+      let aiGeneratedUrl = null;
+      if (generateSocialImage) {
+        const aiBuffer = await perfectCorpService.generateImage(outfitDescription, 'photorealistic');
+        const aiFileName = `outfit_ai_${Date.now()}.png`;
+        const { url } = await linodeService.uploadFile(aiBuffer, aiFileName, 'shared', 'generated');
+        const baseUrl = process.env.API_BASE_URL || process.env.FRONTEND_URL || '';
+        aiGeneratedUrl = url.startsWith('http') ? url : (baseUrl ? `${baseUrl.replace(/\/$/, '')}${url}` : url);
+      }
+
+      res.json({
+        vtonResultUrl,
+        aiGeneratedUrl,
+        message: 'Outfit visualized successfully',
+      });
+    } catch (e) {
+      if (e.statusCode === 402) {
+        return res.status(402).json({
+          error: 'Out of API credits. Please try again later.',
+          hint: 'Sign up at yce.perfectcorp.com for free credits.',
+        });
+      }
+      if (e.message?.includes('not configured')) {
+        return res.status(503).json({
+          error: 'Perfect Corp API not configured',
+          hint: 'Add PERFECT_CORP_API_KEY to enable.',
+        });
+      }
+      next(e);
+    }
+  });
+}
+
+/**
  * POST /api/tryon/share
  * Upload try-on result and return shareable URL
  */
@@ -169,4 +281,46 @@ async function shareTryOn(req, res, next) {
   });
 }
 
-module.exports = { virtualTryOn, virtualTryOnMulti, saveMeasurements, estimateMeasurements, shareTryOn };
+/**
+ * POST /api/tryon/generate-image
+ * Generate fashion image from text prompt. Returns shareable URL.
+ */
+async function generateImageTryon(req, res, next) {
+  try {
+    const { prompt, style } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: 'prompt required' });
+    }
+    const maybeImage = await perfectCorpService.generateImage(
+      prompt,
+      style || 'photorealistic'
+    );
+    if (Buffer.isBuffer(maybeImage)) {
+      const { url } = await perfectCorpService.createShareableResult(maybeImage, 'ai_gen');
+      return res.json({ url });
+    }
+    if (typeof maybeImage === 'object') {
+      if (maybeImage.url) return res.json({ url: maybeImage.url });
+      if (maybeImage.generatedImageUrl) return res.json({ url: maybeImage.generatedImageUrl });
+    }
+    return res.status(500).json({ error: 'Unexpected API response format' });
+  } catch (e) {
+    if (e.code === 'PERFECTCREDITS' || e.statusCode === 402) {
+      return res.status(402).json({
+        error: 'Out of API credits. Please try again later.',
+        hint: 'Sign up at yce.perfectcorp.com for free credits.',
+      });
+    }
+    next(e);
+  }
+}
+
+module.exports = {
+  virtualTryOn,
+  virtualTryOnMulti,
+  saveMeasurements,
+  estimateMeasurements,
+  shareTryOn,
+  visualizeOutfit,
+  generateImageTryon,
+};

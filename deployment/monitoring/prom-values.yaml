@@ -1,0 +1,16 @@
+grafana:
+  enabled: true
+  adminUser: admin
+  # Create a secret for admin password in CI/chart instead of putting it here
+
+prometheus:
+  prometheusSpec:
+    retention: "7d"
+    ruleNamespaceSelector: {}
+    ruleSelector: {}
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  hostRootFsMount: false

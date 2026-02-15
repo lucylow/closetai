@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Camera, Upload, Sparkles, Loader2 } from "lucide-react";
+import { Camera, Upload, Sparkles, Loader2, ExternalLink, AlertCircle } from "lucide-react";
 import { usePerfectCorp } from "@/hooks/usePerfectCorp";
-import { useContentGenerator } from "@/hooks/useContentGenerator";
 import { getImageUrl } from "@/lib/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,6 @@ const PerfectCorpTryOn: React.FC<PerfectCorpTryOnProps> = ({
 }) => {
   const [modelImage, setModelImage] = useState<Blob | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [aiImage, setAiImage] = useState<string | null>(null);
   const [selectedGarment, setSelectedGarment] = useState<SelectedGarment | null>(
     initialGarment ?? null
@@ -35,8 +33,14 @@ const PerfectCorpTryOn: React.FC<PerfectCorpTryOnProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { virtualTryOn } = usePerfectCorp();
-  const { generateStyledImage } = useContentGenerator();
+  const {
+    virtualTryOn,
+    generateImage,
+    loading,
+    error,
+    lastUrl,
+    clearError,
+  } = usePerfectCorp();
 
   // Start camera
   const startCamera = async () => {
@@ -94,50 +98,57 @@ const PerfectCorpTryOn: React.FC<PerfectCorpTryOnProps> = ({
       toast.error("Please capture a photo and select a garment");
       return;
     }
-    setLoading(true);
     setResultImage(null);
+    clearError();
     try {
       const res = await fetch(getImageUrl(selectedGarment.imageUrl) || selectedGarment.imageUrl);
       const garmentBlob = await res.blob();
-      const resultBlob = await virtualTryOn(
+      const result = await virtualTryOn(
         modelImage,
         garmentBlob,
         selectedGarment.category,
         "standard"
       );
-      const url = URL.createObjectURL(resultBlob);
-      setResultImage(url);
+
+      if (typeof result === "object" && "url" in result && result.url) {
+        setResultImage(result.url);
+      } else if (result instanceof Blob) {
+        setResultImage(URL.createObjectURL(result));
+      } else if (lastUrl) {
+        setResultImage(lastUrl);
+      }
       toast.success("Try-on complete!");
     } catch (err) {
-      toast.error("Try-on failed");
-    } finally {
-      setLoading(false);
+      toast.error(err instanceof Error ? err.message : "Try-on failed");
     }
   };
 
-  // Generate AI styled image
+  // Generate AI styled image via Perfect Corp
   const handleGenerateImage = async () => {
     const garment = selectedGarment;
     if (!garment) {
       toast.error("Please select a garment first");
       return;
     }
-    setLoading(true);
     setAiImage(null);
+    clearError();
     try {
       const prompt = `A stylish outfit with a ${garment.color || "elegant"} ${garment.category}, photorealistic fashion photography`;
-      const blob = await generateStyledImage(prompt, "photorealistic");
-      const url = URL.createObjectURL(blob);
-      setAiImage(url);
-      toast.success("AI image generated!");
+      const data = await generateImage(prompt, "photorealistic");
+      const url = data.url || data.generatedImageUrl;
+      if (url) {
+        setAiImage(url);
+        toast.success("AI image generated!");
+      } else {
+        toast.error("No image URL returned");
+      }
     } catch (err) {
-      toast.error("AI generation failed");
-    } finally {
-      setLoading(false);
+      toast.error(err instanceof Error ? err.message : "AI generation failed");
     }
   };
 
-  const garments = availableGarments.length > 0 ? availableGarments : (selectedGarment ? [selectedGarment] : []);
+  const garments =
+    availableGarments.length > 0 ? availableGarments : selectedGarment ? [selectedGarment] : [];
 
   return (
     <div className="perfect-corp-tryon">
@@ -145,6 +156,17 @@ const PerfectCorpTryOn: React.FC<PerfectCorpTryOnProps> = ({
         <Sparkles size={20} />
         Perfect Corp Virtual Try-On
       </h3>
+
+      {error && (
+        <div className="perfect-corp-error" role="alert">
+          <AlertCircle size={18} />
+          <span>{error}</span>
+          <button type="button" onClick={clearError} className="perfect-corp-error-dismiss">
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="tryon-layout">
         <div className="camera-section">
           {!modelImage ? (
@@ -185,11 +207,7 @@ const PerfectCorpTryOn: React.FC<PerfectCorpTryOnProps> = ({
               />
               <canvas ref={canvasRef} className="hidden" />
               {videoRef.current?.srcObject && (
-                <Button
-                  type="button"
-                  onClick={capturePhoto}
-                  className="mt-2"
-                >
+                <Button type="button" onClick={capturePhoto} className="mt-2">
                   Capture
                 </Button>
               )}
@@ -254,12 +272,25 @@ const PerfectCorpTryOn: React.FC<PerfectCorpTryOnProps> = ({
             <div className="result-block">
               <h4>Try-On Result</h4>
               <img src={resultImage} alt="Try-on" className="result-image" />
+              <a
+                href={resultImage}
+                target="_blank"
+                rel="noreferrer"
+                className="result-link"
+              >
+                <ExternalLink size={14} />
+                Open in new tab
+              </a>
             </div>
           )}
           {aiImage && (
             <div className="result-block">
               <h4>AI Styled Image</h4>
               <img src={aiImage} alt="AI styled" className="result-image" />
+              <a href={aiImage} target="_blank" rel="noreferrer" className="result-link">
+                <ExternalLink size={14} />
+                Open in new tab
+              </a>
             </div>
           )}
           <Button

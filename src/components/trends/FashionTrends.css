@@ -1,0 +1,28 @@
+.fashion-trends-loading,
+.fashion-trends-error {
+  padding: 2rem;
+  text-align: center;
+}
+
+.fashion-trends-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fashion-trend-card {
+  border-radius: 1.25rem;
+  transition: box-shadow 0.2s;
+}
+
+.fashion-trend-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.trend-score {
+  flex-shrink: 0;
+}
+
+.trend-footer .source-link {
+  max-width: 70%;
+}

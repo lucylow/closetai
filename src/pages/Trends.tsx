@@ -6,6 +6,7 @@ import { DEMO_TRENDS, fashionTrends } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import TrendExplorer from "@/components/trends/TrendExplorer";
 import TrendsWithCitations from "@/components/trends/TrendsWithCitations";
+import FashionTrends from "@/components/trends/FashionTrends";
 import { YouComTrends } from "@/components/sponsors";
 
 const directionIcon = (d: string) => {
@@ -118,6 +119,11 @@ const TrendsPage = () => {
             <p className="text-muted-foreground">{insight}</p>
           </motion.div>
         ))}
+      </div>
+
+      {/* Category-based fashion trends (You.com API) */}
+      <div className="glass-card p-6">
+        <FashionTrends category="all" />
       </div>
 
       {/* You.com enhanced trend research */}

@@ -20,6 +20,7 @@ import TryOn from "./pages/TryOn";
 import Sponsors from "./pages/Sponsors";
 import StyleExplorer from "@/components/style/StyleExplorer";
 import NotFound from "./pages/NotFound";
+import AdminBilling from "./pages/AdminBilling";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="style/:itemId" element={<StyleExplorer />} />
               <Route path="sponsors" element={<Sponsors />} />
               <Route path="business" element={<Business />} />
+              <Route path="admin/billing" element={<AdminBilling />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

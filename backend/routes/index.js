@@ -14,6 +14,11 @@ const analyticsRoutes = require('./analytics.routes');
 const declutterRoutes = require('./declutter.routes');
 const trendPredictionRoutes = require('./trendPrediction.routes');
 const sponsorsRoutes = require('./sponsors.routes');
+const adminRoutes = require('./admin.routes');
+const kiloRoutes = require('./kilo.routes');
+const usageRoutes = require('./usage.routes');
+const billingRoutes = require('./billing.routes');
+const jobsRoutes = require('./jobs.routes');
 
 const router = express.Router();
 
@@ -31,6 +36,11 @@ router.use('/preferences', userPreferenceRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/declutter', declutterRoutes);
 router.use('/trend-prediction', trendPredictionRoutes);
+router.use('/admin', adminRoutes);
+router.use('/kilo', kiloRoutes);
+router.use('/usage', usageRoutes);
+router.use('/billing', billingRoutes);
+router.use('/jobs', jobsRoutes);
 router.use('/', sponsorsRoutes);
 
 module.exports = router;

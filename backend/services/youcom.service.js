@@ -1,6 +1,13 @@
 const axios = require('axios');
 const env = require('../config/env');
 
+let youcomClient = null;
+try {
+  youcomClient = require('../lib/youcomClient');
+} catch {
+  // youcomClient optional (e.g. missing deps)
+}
+
 const FALLBACK_TRENDS = [
   { name: 'Oversized Blazers', score: 94, direction: 'up', description: 'Relaxed tailoring dominates.' },
   { name: 'Wide-Leg Trousers', score: 88, direction: 'up', description: 'Comfort meets elegance.' },
@@ -11,7 +18,7 @@ const FALLBACK_TRENDS = [
 
 class YouComService {
   constructor() {
-    this.baseURL = 'https://api.ydc-index.io/v1';
+    this.baseURL = env.youcom?.baseUrl || 'https://api.ydc-index.io/v1';
   }
 
   /**
@@ -25,6 +32,13 @@ class YouComService {
       return { results: { web: [] }, fallback: FALLBACK_TRENDS };
     }
     try {
+      if (youcomClient?.search) {
+        const { data } = await youcomClient.search(query, {
+          count: options.num_results || 10,
+          freshness: options.freshness,
+        });
+        return data;
+      }
       const params = {
         query,
         num_results: options.num_results || 10,
@@ -63,12 +77,49 @@ class YouComService {
     return parts.join(' ');
   }
 
+  /**
+   * News API - Latest fashion news and trends (if endpoint available)
+   */
+  async getNews(query, options = {}) {
+    if (!env.youcom?.apiKey) return { results: { news: [] } };
+    try {
+      const params = { query, ...options };
+      const response = await axios.get(`${this.baseURL}/news`, {
+        headers: { 'X-API-Key': env.youcom.apiKey },
+        params,
+      });
+      return response.data;
+    } catch (e) {
+      return { results: { news: [] } };
+    }
+  }
+
+  /**
+   * Content API - Extract article content for detailed trend analysis (if endpoint available)
+   */
+  async extractContent(url) {
+    if (!env.youcom?.apiKey) return null;
+    try {
+      const response = await axios.get(`${this.baseURL}/content`, {
+        headers: { 'X-API-Key': env.youcom.apiKey },
+        params: { url },
+      });
+      return response.data;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async searchFashionTrends(query = 'latest fashion trends', limit = 10) {
     if (!env.youcom?.apiKey) {
       return { results: { web: [] }, fallback: FALLBACK_TRENDS };
     }
     try {
-      const response = await axios.get('https://api.ydc-index.io/v1/search', {
+      if (youcomClient?.search) {
+        const { data } = await youcomClient.search(query, { count: limit, freshness: 'week' });
+        return data;
+      }
+      const response = await axios.get(`${this.baseURL}/search`, {
         headers: { 'X-API-Key': env.youcom.apiKey },
         params: { query, num_results: limit },
       });

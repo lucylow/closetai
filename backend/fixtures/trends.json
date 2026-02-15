@@ -1,0 +1,62 @@
+{
+  "query": "fallback trends all (fixtures)",
+  "timestamp": "2025-02-15T00:00:00.000Z",
+  "trends": [
+    {
+      "title": "Oversized Blazers",
+      "description": "Relaxed tailoring dominates runways and street style.",
+      "url": "https://www.vogue.com/fashion-trends",
+      "snippet": "Oversized blazers continue to be a must-have for 2025.",
+      "source": "vogue.com",
+      "favicon": "https://www.google.com/s2/favicons?domain=vogue.com&sz=32",
+      "relevance": 94,
+      "insights": []
+    },
+    {
+      "title": "Wide-Leg Trousers",
+      "description": "Comfort meets elegance in flowing silhouettes.",
+      "url": "https://www.elle.com/fashion",
+      "snippet": "Wide-leg trousers are everywhere this season.",
+      "source": "elle.com",
+      "favicon": "https://www.google.com/s2/favicons?domain=elle.com&sz=32",
+      "relevance": 88,
+      "insights": []
+    },
+    {
+      "title": "Sustainable Linen",
+      "description": "Eco-conscious fabrics trending across categories.",
+      "url": "https://you.com/hackathon",
+      "snippet": "Sustainable fashion continues to gain traction.",
+      "source": "you.com",
+      "favicon": "https://you.com/favicon.ico",
+      "relevance": 82,
+      "insights": []
+    },
+    {
+      "title": "90s Vintage",
+      "description": "Nostalgic aesthetics remain strong.",
+      "url": "https://you.com/hackathon",
+      "snippet": "Vintage and retro styles are coming back.",
+      "source": "you.com",
+      "favicon": "https://you.com/favicon.ico",
+      "relevance": 79,
+      "insights": []
+    },
+    {
+      "title": "Monochrome Layering",
+      "description": "Single-color outfits trending for a polished look.",
+      "url": "https://you.com/hackathon",
+      "snippet": "Monochrome dressing is in vogue.",
+      "source": "you.com",
+      "favicon": "https://you.com/favicon.ico",
+      "relevance": 73,
+      "insights": []
+    }
+  ],
+  "sources": [
+    { "url": "https://www.vogue.com/fashion-trends", "title": "Vogue: Fashion Trends", "favicon": null, "date": null },
+    { "url": "https://www.elle.com/fashion", "title": "Elle: Fashion", "favicon": null, "date": null },
+    { "url": "https://you.com/hackathon", "title": "You.com Hackathon Resources", "favicon": null, "date": null }
+  ],
+  "meta": { "fallback": true }
+}

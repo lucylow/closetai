@@ -1,0 +1,60 @@
+# Kilo Playbook CI (Generate README summary)
+# Run manually via workflow_dispatch. Requires KILO_API_KEY secret for Kilo Gateway.
+name: Kilo Playbook CI (Generate README summary)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_agent:
+        description: 'Run the Kilo agent to summarize README'
+        required: true
+        default: 'true'
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Kilo CLI (for safety fallback)
+        run: npm install -g @kilocode/cli
+
+      - name: Configure environment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KILO_API_KEY: ${{ secrets.KILO_API_KEY }}
+        run: |
+          echo "GITHUB_TOKEN and KILO_API_KEY present"
+
+      - name: Run Kilo agent (CLI)
+        id: run_kilo
+        run: |
+          echo "Running agent..."
+          kilo agent run --agent summarize-readme-and-create-pr --cwd $GITHUB_WORKSPACE --non-interactive --output json > kilo-result.json 2>/dev/null || true
+          cat kilo-result.json || echo '{}'
+
+      - name: Parse result and open PR
+        if: success() || always()
+        run: |
+          if [ -f kilo-result.json ] && jq -e '.patch' kilo-result.json >/dev/null 2>&1; then
+            PATCH=$(jq -r '.patch' kilo-result.json)
+            echo "$PATCH" > /tmp/patch.diff
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout -b kilo/auto-readme-summary-$(date +%s)
+            git apply /tmp/patch.diff
+            git add README.md
+            git commit -m "docs: concise README summary (automated)"
+            git push --set-upstream origin HEAD
+            gh pr create --title "docs: concise README summary" --body "Automated summary by Kilo agent" || echo "gh CLI missing or push failed"
+          else
+            echo "No patch produced by agent"
+          fi
