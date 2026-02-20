@@ -1,0 +1,7 @@
+{
+  "src_file_url": "/fixtures/bag/full_body.jpg",
+  "ref_file_url": "/fixtures/bag/handbag_leather.png",
+  "bag_type": "handbag",
+  "style": "style_minimalist",
+  "placement": "hand_held"
+}

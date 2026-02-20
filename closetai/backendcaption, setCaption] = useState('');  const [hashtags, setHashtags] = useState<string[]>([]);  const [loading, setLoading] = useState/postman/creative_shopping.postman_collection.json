@@ -1,0 +1,209 @@
+{
+  "info": {
+    "name": "ClosetAI Creative Shopping",
+   (false);
+
+  async function generate() {
+    setLoading(true);
+    try {
+      const { data } = await axios.post('/api/generate/caption', { userId, itemNames, "_postman_id": "closetai-creative",
+    "description": "Demo collection for creative shopping and virtual try-on API",
+    "schema": "https:// templateId: null });
+      setCaption(data.text || data.caption);
+      const h = await axios.post('/api/generate/hashtags', { userId, caption: data.text || data.caption });
+      setHashtags(h.data.hashtags || []);
+    } catch (err) {
+      alert('generation failed');
+    } finally {
+      setLoading(false);
+    }
+schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+  }
+
+  return (
+    <div className="p-4">
+      <h2 className="text-lg font-bold">Compose</h2>
+      <textarea 
+        value={item        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/demo/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["apiNames} 
+        onChange={e => setItemNames(e.target.value)} 
+        className="w-full p-2 border" 
+      />
+      <div className="mt-2", "demo", "health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Generate Recommendations",
+      "request": {
+        "method": "POST",
+">
+        <button 
+          className="px-4 py-2 bg-blue-600 text-white rounded" 
+          onClick={generate} 
+          disabled={loading}
+        >
+          Generate
+        </button>
+      </div>
+      {loading && <div>Generating...</div>}
+      {caption && (
+        <div className="mt-4">
+          <h3>C        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw":aption</h3>
+          <p className="p-2 bg-gray-100 rounded">{caption}</p>
+        </div>
+      )}
+      {hashtags.length > 0 && "{\n  \"seedItemIds\": [\"seed-1\"],\n  \"context\": { \"occasion\": \"casual\", \"vibe\": \"minimal\" },\n  (
+        <div className="mt-2">
+          <h3>Hashtags</h3>
+          <p>{hashtags.join(' ')}</p>
+        </div \"options\": { \"numResults\": 3, \"includeContent\": true }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/demo/generate",
+         >
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## 7. Testing & Evaluation Harness
+
+### backend/tests/modelProviders.test.ts
+
+```typescript
+// backend/tests/modelProviders "host": ["{{baseUrl}}"],
+          "path": ["api", "demo", "generate"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": ".test.ts
+import { callTextModel, callImageModel, callEmbeddingModel } from '../src/lib/modelProviders';
+
+describe('modelProviders', () => {
+  const OLD_ENV = processGet Generate Status",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/demo/status/:jobId",
+          ".env;
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...OLD_ENV, DEMO_MODE: 'true' };
+  });
+
+  afterAllhost": ["{{baseUrl}}"],
+          "path": ["api", "demo", "status", ":jobId"]
+        }
+      },
+      "response": []
+    },
+    {
+      "(() => {
+    process.env = OLD_ENV;
+  });
+
+  describe('callTextModel', () => {
+    it('returns deterministic demo output', async () => {
+      const resultname": "TryOn Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" = await callTextModel({ prompt: 'Hello world' });
+      expect(result).toBe('Demo: Hello world...');
+    });
+
+    it('truncates long }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"baseImageUrl\": \"/uploads/demo-user-img.jpg\",\n  prompts', async () => {
+      const longPrompt = 'A'.repeat(200);
+      const result = await callTextModel({ prompt: longPrompt });
+      expect(result.length).toBeLess \"recommendation\": { \"id\": \"rec-1\" }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/demo/tryon",
+          "hostThan(100);
+    });
+  });
+
+  describe('callEmbeddingModel', () => {
+    it('returns deterministic vector', async () => {
+      const vec1 = await callEmbedding": ["{{baseUrl}}"],
+          "path": ["api", "demo", "tryon"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TryModel({ text: 'test' });
+      const vec2 = await callEmbeddingModel({ text: 'test' });
+      expect(vec1).toEqual(vec2);
+    });
+  });
+});
+```
+
+On Poll Status",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/demo/tryon/:taskId",
+         ### backend/scripts/evaluate_captions.ts
+
+```typescript
+// backend/scripts/evaluate_captions.ts
+import fs from 'fs';
+import path from 'path';
+
+// Simple BLE "host": ["{{baseUrl}}"],
+          "path": ["api", "demo", "tryon", ":taskId"]
+        }
+      },
+      "response": []
+    },
+    {
+U-like score (for demo; use libraries in production)
+function simpleOverlap(      "name": "Get Fixtures",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/demo/fixtures/regenerated: string, reference: string): number {
+  const genWords = generated.toLowerCase().split(/\s+/);
+  const refWords = reference.toLowerCasecommendations_demo.json",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "demo", "fixtures", "recommendations_demo.json"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}

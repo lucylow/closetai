@@ -1,0 +1,13 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-watch-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_watch_demo.png",
+      "mask": "/placeholders/mask_watch.png",
+      "watch_type": "smartwatch",
+      "style_used": "modern"
+    }
+  }
+}

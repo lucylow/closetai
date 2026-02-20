@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rec-1",
+    "score": 0.93,
+    "items": [
+      { "sku": "SKU-101", "name": "Structured Blazer", "imageUrl": "/static/item1.png", "price": 129 },
+      { "sku": "SKU-102", "name": "Slim Jeans", "imageUrl": "/static/item2.png", "price": 79 }
+    ],
+    "outfitImageUrl": "/static/composite1.png",
+    "caption": "Casual chic for the weekend — keep it simple and polished.",
+    "hashtags": ["#OOTD", "#CasualChic"],
+    "rationale": "Matches blazer to denim for balanced silhouette",
+    "costEstimate": { "total": 208, "currency": "USD" },
+    "source": "market"
+  },
+  {
+    "id": "rec-2",
+    "score": 0.82,
+    "items": [
+      { "sku": "SKU-201", "name": "Midi Dress", "imageUrl": "/static/item3.png", "price": 139 },
+      { "sku": "SKU-202", "name": "Ankle Boot", "imageUrl": "/static/item4.png", "price": 99 }
+    ],
+    "outfitImageUrl": "/static/composite2.png",
+    "caption": "Effortless dress that transitions day → night.",
+    "hashtags": ["#Style", "#Dress"],
+    "rationale": "Color harmony with your top items",
+    "costEstimate": { "total": 238, "currency": "USD" },
+    "source": "affiliate"
+  },
+  {
+    "id": "rec-3",
+    "score": 0.78,
+    "items": [
+      { "sku": "SKU-301", "name": "Cashmere Sweater", "imageUrl": "/static/item5.png", "price": 189 },
+      { "sku": "SKU-302", "name": "Tailored Trousers", "imageUrl": "/static/item6.png", "price": 119 }
+    ],
+    "outfitImageUrl": "/static/composite3.png",
+    "caption": "Sophisticated layers for the modern professional.",
+    "hashtags": ["#WorkWear", "#Professional"],
+    "rationale": "Classic pairing with premium fabrics",
+    "costEstimate": { "total": 308, "currency": "USD" },
+    "source": "market"
+  }
+]

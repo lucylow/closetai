@@ -1,0 +1,11 @@
+{
+  "taskId": "demo_tryon_1",
+  "status": "success",
+  "result": {
+    "compositeUrl": "/fixtures/images/composite_demo.png",
+    "masks": {
+      "SKU-001": "/fixtures/images/item1.png",
+      "SKU-002": "/fixtures/images/item2.png"
+    }
+  }
+}

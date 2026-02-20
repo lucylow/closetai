@@ -1,0 +1,24 @@
+{
+  "info": {
+    "name": "Creative Shopping Journey API",
+    "description": "Postman collection for Creative Shopping Journey Recommendations API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4001" },
+    { "key": "userId", "value": "" },
+    { "key": "apiKey", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Generate Recommendations",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/creative/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Request-Id", "value": "{{$randomUUID}}", "disabled": false }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"seedItemIds\":

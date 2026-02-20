@@ -1,0 +1,13 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-bracelet-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_bracelet_demo.png",
+      "mask": "/placeholders/mask_bracelet.png",
+      "bracelet_type": "bangle",
+      "style_used": "elegant"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_no_hand_detected",
+    "message": "No hand detected in source image. Please upload a clear photo of your hand."
+  }
+}

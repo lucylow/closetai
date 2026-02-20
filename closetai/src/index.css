@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base theme colors */
+    --background: 260 30% 97%;
+    --foreground: 260 40% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 260 40% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 40% 12%;
+
+    --primary: 260 65% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 20 100% 74%;
+    --secondary-foreground: 20 60% 20%;
+
+    --muted: 260 20% 94%;
+    --muted-foreground: 260 10% 46%;
+
+    --accent: 170 100% 39%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 260 20% 90%;
+    --input: 260 20% 90%;
+    --ring: 260 65% 58%;
+
+    --radius: 1rem;
+
+    /* Enhancement Package Colors */
+    --bg-primary: 0 0% 100%;
+    --bg-secondary: 260 30% 97%;
+    --text-primary: 260 40% 12%;
+    --text-secondary: 260 10% 46%;
+    --accent-color: 260 65% 58%;
+    --accent-light: 260 80% 72%;
+    --accent-dark: 260 65% 50%;
+    --error: 0 84% 60%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --transition: all 0.2s ease;
+
+    /* Custom tokens */
+    --primary-light: 260 80% 72%;
+    --gradient-hero: linear-gradient(145deg, hsl(260 40% 12%), hsl(260 30% 36%));
+    --gradient-bg: linear-gradient(145deg, hsl(260 30% 97%), hsl(250 30% 96%));
+    --gradient-primary: linear-gradient(135deg, hsl(260 65% 58%), hsl(280 70% 72%));
+    --gradient-warm: linear-gradient(135deg, hsl(20 100% 90%), hsl(340 80% 90%));
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 20px 40px -12px rgba(110, 74, 224, 0.15);
+    --glass-card-bg: rgba(255, 255, 255, 0.6);
+    --trend-bg: linear-gradient(135deg, hsl(20 100% 92%), hsl(340 80% 92%));
+    --trend-color: 15 60% 40%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 260 30% 12%;
+    --foreground: 260 20% 96%;
+    --card: 260 25% 16%;
+    --card-foreground: 260 20% 96%;
+    --popover: 260 25% 16%;
+    --popover-foreground: 260 20% 96%;
+    --muted: 260 20% 22%;
+    --muted-foreground: 260 15% 65%;
+    --border: 260 20% 25%;
+    --input: 260 20% 25%;
+    
+    --bg-primary: 260 30% 12%;
+    --bg-secondary: 260 25% 18%;
+    --text-primary: 260 20% 96%;
+    --text-secondary: 260 15% 65%;
+    --accent-color: 260 80% 72%;
+    --accent-light: 260 85% 78%;
+    --accent-dark: 260 65% 58%;
+
+    --glass-bg: rgba(30, 27, 46, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-card-bg: rgba(45, 40, 65, 0.6);
+    --gradient-bg: linear-gradient(145deg, hsl(260 30% 12%), hsl(260 25% 18%));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    background: var(--gradient-bg);
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 2rem;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-card {
+    background: var(--glass-card-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 50px -20px rgba(110, 74, 224, 0.25);
+  }
+
+  .gradient-text {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .trend-badge {
+    background: var(--trend-bg);
+    color: hsl(var(--trend-color));
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .main-content {
+    min-height: calc(100vh - 80px);
+    padding: 20px;
+  }
+
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    padding: 16px 24px;
+    border-radius: 40px;
+    background: hsl(var(--bg-primary));
+    color: hsl(var(--text-primary));
+    box-shadow: var(--shadow);
+    border-left: 6px solid hsl(var(--accent-color));
+    max-width: 300px;
+    pointer-events: none;
+  }
+
+  .toast-success { border-left-color: hsl(var(--success)); }
+  .toast-error { border-left-color: hsl(var(--error)); }
+  .toast-warning { border-left-color: hsl(var(--warning)); }
+
+  .skeleton {
+    background: linear-gradient(90deg, hsl(var(--border)) 25%, #e0e0e0 50%, hsl(var(--border)) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .k-card {
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    background: hsl(var(--card));
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .k-card:hover {
+    box-shadow: 0 4px 12px rgba(110, 74, 224, 0.1), 0 2px 4px rgba(0,0,0,0.06);
+  }
+
+  .hover-elevate {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .hover-elevate:hover {
+    transform: translateY(-1px);
+  }
+
+  .k-grid-header {
+    background: hsl(var(--muted));
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
+  }
+
+  .kendo-enterprise-badge {
+    background: linear-gradient(135deg, #6E4AE0, #9f7ef5);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}

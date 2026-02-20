@@ -1,0 +1,254 @@
+/**
+ * Product Routes - Product and catalog API
+ */
+const express = require('express');
+const productService = require('../services/productService');
+
+const router = express.Router();
+
+/**
+ * GET /api/products
+ * Get products with filters
+ * Query: category, brand, minPrice, maxPrice, search, limit, offset
+ */
+router.get('/', async ( Admin Status & Credits ===\n');
+  
+  console.log('Curl equivalent:');
+  console.log(`curl -X GET ${API_BASE}/admin/status \\
+  -H "Authorization: Bearer <ADMIN_TOKEN>"`);
+
+  try {
+    const result = await apiRequest('/admin/status');
+    console.log('\nResponse:', JSON.stringify(result, null, 2));
+    return result;
+req, res, next) => {
+  try {
+    const { category, brand, minPrice, maxPrice, search, limit = 20, offset = 0 } = req.query;
+    
+    const products = await productService.getProducts({
+      category,
+      brandId: brand,
+      minPrice: minPrice ? parseFloat(minPrice) : undefined,
+      maxPrice: max  } catch (error) {
+    console.error('Error:', error.message);
+    return null;
+  }
+}
+
+/**
+ * Demo 7: List User's Jobs
+ * 
+ * Curl:
+ * curl -X GET $API_URL/gen/jobs?status=completed&limit=10 \
+ *   -H "Authorization: Bearer $JWT_TOKEN"
+ */
+async function demoListJobs() {
+Price ? parseFloat(maxPrice) : undefined,
+      search,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    });
+    
+    res.json({ products });
+  console.log('\n=== Demo 7: List User Jobs ===\n');
+  
+  console.log('Curl equivalent:');
+  console.log(`curl -X GET "${API_BASE}/gen  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/products/featured
+ * Get featured products
+ */
+router.get('/featured', async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const products = await productService.getFeaturedProducts(limit);
+   /jobs?status=completed&limit=10" \\
+  -H "Authorization: Bearer <JWT_TOKEN>"`);
+
+  try {
+    const result = await apiRequest('/gen/jobs? res.json({ products });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/products/categories
+ * Get all categories
+ */
+router.get('/categoriesstatus=completed&limit=10');
+    console.log('\nResponse:', JSON.stringify(result, null, 2));
+    return result;
+  } catch (error) {
+    console.error('Error', async (req, res, next) => {
+  try {
+    const categories = await productService.getCategories();
+    res.json({ categories });
+  } catch (error) {
+    next(error:', error.message);
+    return null;
+  }
+}
+
+/**
+ * Demo 8: Get Upload URL for direct S3 upload
+ * 
+ * Curl:
+ * curl -X POST $API_URL);
+  }
+});
+
+/**
+ * GET /api/products/search
+ * Search products
+ */
+router.get('/search', async (req, res, next) => {
+  try {
+    const/gen/upload-url \
+ *   -H "Authorization: Bearer $JWT_TOKEN" \
+ *   -H "Content-Type: application/json" \
+ *   -d '{"filename":"my-photo.jpg","contentType":"image/jpeg","folder":"uploads"}'
+ */
+async function demoGetUploadUrl() {
+  console.log('\n=== Demo 8: Get Upload URL ===\n');
+  
+  const request = {
+    filename: 'my-photo.jpg',
+    contentType: 'image/jpeg',
+    folder: 'uploads',
+  };
+
+  console.log('Request:', JSON { q, limit = 20 } = req.query;
+    
+    if (!q) {
+      return res.status(400).json({ error: 'Search query (q) is required.stringify(request, null, 2));
+  console.log('\nCurl equivalent:');
+  console.log(`curl -X POST ${API_BASE}/gen/upload-url \\
+  -H "Authorization: Bearer <JWT_TOKEN>" \\
+  -H "Content-Type: application/json" \\
+  -d '${JSON.stringify(request)}'`);
+
+  try {
+    const result = await apiRequest('/gen/upload' });
+    }
+    
+    const products = await productService.searchProducts(q, parseInt(limit));
+    res.json({ products });
+  } catch (error) {
+    next(error);
+  }
+-url', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+    
+    console.log('\nResponse:', JSON.stringify(result, null, 2));
+    return result;
+ });
+
+/**
+ * GET /api/products/:id
+ * Get product by ID
+ */
+router.get('/:id', async (req, res, next) => {
+  try {
+    const { id } catch (error) {
+    console.error('Error:', error.message);
+    return null;
+  }
+}
+
+/**
+ * Poll job until completion
+ */
+async function pollJob(jobId, maxAttempts = } = req.params;
+    const product = await productService.getProductById(id);
+    
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found 30, interval = 2000) {
+  let attempts = 0;
+  
+  while (attempts < maxAttempts) {
+    try {
+      const status = await apiRequest' });
+    }
+    
+    res.json({ product });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/products/:id/related
+ * Get related(`/gen/job/${jobId}`);
+      console.log(`  Attempt ${attempts + 1}: Status = ${status.status}`);
+      
+      if (status.status === products
+ */
+router.get('/:id/related', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const limit = parseInt(req.query 'completed') {
+        console.log('\nJob completed!');
+        if (status.resultUrl) {
+          console.log(`Result URL: ${status.resultUrl}`);
+        }
+        return status;
+      }
+      
+      if (status.status === 'failed') {
+        console.log('\nJob failed:', status.errorMessage);
+        return status;
+      }
+      
+      await new Promise(resolve =>.limit) || 6;
+    
+    const products = await productService.getRelatedProducts(id, limit);
+    res.json({ products });
+  } catch (error) {
+    next(error);
+  }
+ setTimeout(resolve, interval));
+      attempts++;
+    } catch (error) {
+      console.error('Polling error:', error.message);
+      break;
+    }
+  }
+  
+  console});
+
+/**
+ * GET /api/skus/:id
+ * Get SKU by ID
+ */
+router.get('/skus/:id', async (req, res, next) => {
+  try.log('Polling timeout');
+  return null;
+}
+
+/**
+ * Run all demos or specific demo
+ */
+async function main() {
+  const args = process.argv.slice(2);
+  {
+    const { id } = req.params;
+    const sku = await productService.getSkuById(id);
+    
+    if (!sku) {
+      return res.status(404).json({ error: 'SKU not found' });
+    }
+    
+    res.json({ sku });
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;

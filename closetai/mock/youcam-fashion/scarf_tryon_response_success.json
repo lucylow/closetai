@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-scarf-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_scarf_demo.png",
+      "mask": "/placeholders/mask_scarf.png",
+      "style_selected": "style_bohemian"
+    }
+  }
+}

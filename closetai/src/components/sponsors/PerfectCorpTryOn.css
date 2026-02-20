@@ -1,0 +1,230 @@
+.perfect-corp-tryon {
+  background: hsl(var(--card));
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.perfect-corp-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: hsl(var(--foreground));
+}
+
+.perfect-corp-tryon .tryon-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .perfect-corp-tryon .tryon-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.perfect-corp-tryon .camera-section {
+  background: hsl(var(--muted) / 0.5);
+  border-radius: 16px;
+  padding: 20px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfect-corp-tryon .camera-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.perfect-corp-tryon .camera-video {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  border-radius: 12px;
+  background: hsl(var(--muted));
+}
+
+.perfect-corp-tryon .captured-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.perfect-corp-tryon .captured-preview {
+  max-width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.perfect-corp-tryon .captured-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.perfect-corp-tryon .result-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.perfect-corp-tryon .garment-picker {
+  margin-bottom: 8px;
+}
+
+.perfect-corp-tryon .garment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.perfect-corp-tryon .garment-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid hsl(var(--border));
+  background: hsl(var(--card));
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.perfect-corp-tryon .garment-chip:hover,
+.perfect-corp-tryon .garment-chip.selected {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.08);
+}
+
+.perfect-corp-tryon .garment-chip img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.perfect-corp-tryon .garment-chip span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.perfect-corp-tryon .result-block {
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.perfect-corp-tryon .result-block h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: hsl(var(--foreground));
+}
+
+.perfect-corp-tryon .result-image {
+  max-width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.perfect-corp-tryon .result-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: hsl(var(--primary));
+  text-decoration: none;
+}
+
+.perfect-corp-tryon .result-link:hover {
+  text-decoration: underline;
+}
+
+.perfect-corp-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: hsl(var(--destructive) / 0.1);
+  border: 1px solid hsl(var(--destructive) / 0.3);
+  border-radius: 12px;
+  color: hsl(var(--destructive));
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.perfect-corp-error > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.perfect-corp-error-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.perfect-corp-error-body span {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.perfect-corp-error-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.perfect-corp-retry-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid currentColor;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  transition: background 0.2s;
+}
+
+.perfect-corp-retry-btn:hover {
+  background: hsl(var(--destructive) / 0.1);
+}
+
+.perfect-corp-retry-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.perfect-corp-error-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  padding: 4px 8px;
+}
+
+.perfect-corp-error-dismiss:hover {
+  opacity: 1;
+}

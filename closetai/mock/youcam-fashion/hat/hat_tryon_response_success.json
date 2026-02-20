@@ -1,0 +1,45 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-hat-tryon-001",
+    "estimated_seconds": 2,
+    "output": {
+      "composite_url": "/fixtures/hat/hat_tryon_result.png",
+      "mask_url": "/fixtures/hat/hat_mask.png",
+      "detections": {
+        "head": {
+          "bbox": [280, 120, 240, 280],
+          "keypoints": [
+            {"name": "nose", "x": 400, "y": 250, "confidence": 0.98},
+            {"name": "left_eye", "x": 350, "y": 220, "confidence": 0.96},
+            {"name": "right_eye", "x": 450, "y": 220, "confidence": 0.96},
+            {"name": "forehead_top", "x": 400, "y": 120, "confidence": 0.94}
+          ]
+        }
+      },
+      "hat_placement": {
+        "position": {"x": 400, "y": 100},
+        "rotation_degrees": 0,
+        "scale_factor": 1.0
+      },
+      "variants": [
+        {
+          "variant_id": "hat_black_001",
+          "color": "black",
+          "material": "felt",
+          "preview_url": "/fixtures/hat/variants/hat_black.png",
+          "sku": "HAT-BLK-001"
+        },
+        {
+          "variant_id": "hat_brown_001",
+          "color": "brown",
+          "material": "felt",
+          "preview_url": "/fixtures/hat/variants/hat_brown.png",
+          "sku": "HAT-BRN-001"
+        }
+      ],
+      "hat_type": "fedora",
+      "style_used": "style_modern_chic"
+    }
+  }
+}

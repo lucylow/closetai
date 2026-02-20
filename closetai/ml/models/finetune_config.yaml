@@ -1,0 +1,93 @@
+# Fine-tuning Configuration for Transfer/Refinement Model
+# 
+# This config is used by train_transfer.py to train the image
+# refinement model that improves Perfect API outputs.
+#
+# Usage:
+#   python train_transfer.py --config finetune_config.yaml
+
+# Model Architecture
+model:
+  name: "refinement_unet"
+  in_channels: 3
+  out_channels: 3
+  base_channels: 64
+  num_residual_blocks: 9
+  use_pretrained_encoder: true
+  encoder_pretrained: true
+
+# Training Parameters
+training:
+  # Optimization
+  epochs: 100
+  batch_size: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-5
+  warmup_epochs: 5
+  
+  # Mixed Precision
+  use_amp: true
+  amp_dtype: "float16"
+  
+  # Loss Weights
+  loss:
+    lambda_l1: 1.0
+    lambda_lpips: 0.5
+    lambda_perceptual: 0.1
+    lambda_smooth: 0.01
+  
+  # Scheduler
+  scheduler:
+    type: "cosine_annealing_warm_restarts"
+    T_0: 10
+    T_mult: 2
+    eta_min: 1.0e-6
+  
+  # Gradient Clipping
+  clip_grad_norm: 1.0
+
+# Data Configuration
+data:
+  # Directories
+  train_dir: "./data/pairs/train"
+  val_dir: "./data/pairs/val"
+  test_dir: "./data/pairs/test"
+  
+  # Image settings
+  image_size: 512
+  normalize: true
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+  
+  # Augmentation
+  augmentation:
+    enabled: true
+    random_flip: true
+    random_rotation: 15
+    color_jitter:
+      brightness: 0.2
+      contrast: 0.2
+      saturation: 0.2
+      hue: 0.1
+
+# Checkpointing
+checkpoint:
+  save_frequency: 5
+  save_best: true
+  monitor: "val_loss"
+
+# Logging
+logging:
+  log_frequency: 10
+  tensorboard: true
+  wandb:
+    enabled: false
+    project: "fashion-refinement"
+    entity: null
+
+# Validation
+validation:
+  frequency: 1
+  save_images: true
+  num_samples: 4

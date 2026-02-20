@@ -1,0 +1,231 @@
+/**
+ * UploadWidget - Drag & drop image upload with signed URL
+ * 
+ * Features:
+ * - Drag & drop>
+              <input 
+                type="range" 
+                min="0" 
+                max="24" 
+                value={parseInt(borderRadius)} 
+                onChange={(e) support
+ * - Client-side validation (file type, size)
+ * - Auto-resize preview
+ * - Direct upload to S3 via => setBorderRadius(`${e.target.value}px`)}
+                className="flex-1"
+              />
+              <span className="w-12">{borderRadius} signed PUT URL
+ * - Progress indication
+ * 
+ * @module components/UploadWidget
+ */
+
+import { useState, useCallback, useRef</span>
+            </div>
+          </div>
+          
+          {/* Logo */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Logo } from 'react';
+import { api } from '../services/api';
+import './UploadWidget.css';
+
+interface UploadWidgetProps {
+  onUploadComplete: (key: string, url: string) =></h3>
+            
+            <div className="flex items-center gap-4">
+              <input 
+                type="file" 
+                accept="image/*"
+                onChange={handleLogo void;
+  onError?: (error: Error) => void;
+  acceptedTypes?: string[];
+  maxSizeMB?: number;
+  label?: string;
+}
+
+Change}
+                className="border rounded px-2 py-1"
+              />
+            </div>
+            
+            {previewLogo && (
+              <div className="mt-2const DEFAULT_ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const DEFAULT_MAX_SIZE_MB = 10">
+                <img 
+                  src={previewLogo} 
+                  alt="Logo preview" 
+                  className="h-16 object-contain"
+                />
+              </div>
+            )}
+         ;
+
+export function UploadWidget({
+  onUploadComplete,
+  onError,
+  acceptedTypes = DEFAULT_ACCEPTED_TYPES,
+  maxSizeMB = DEFAULT_MAX_SIZE_MB,
+  label = 'Drop your image here or click to browse',
+}: UploadWidgetProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [ </div>
+          
+          {/* Save Button */}
+          <button 
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full py-3 px-6isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [preview, setPreview] = rounded font-semibold transition-colors"
+            style={{ 
+              backgroundColor: primary, 
+              color: '#fff',
+              opacity useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+ : saving ? 0.7 : 1
+            }}
+          >
+            {saving ? 'Saving...' : 'Save Theme'}
+          </button>
+        </div>
+        
+        {/* Preview const validateFile = (file: File): string | null => {
+    if (!acceptedTypes.includes(file.type)) {
+      return `Invalid file type. Accepted: ${ Panel */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Preview</h3>
+          
+          <div 
+acceptedTypes.join(', ')}`;
+    }
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      return `File too large. Maximum size: ${max            className="border rounded-lg overflow-hidden"
+            style={previewStyles.background}
+          >
+            {/* Header Preview */}
+            <div 
+              classNameSizeMB}MB`;
+    }
+    return null;
+  };
+
+  const handleFile = useCallback(async (file: File) => {
+    const validationError = validateFile="p-4 flex items-center gap-3"
+              style={previewStyles.primary}
+            >
+              {previewLogo && (
+                <img src={previewLogo} alt="Logo"(file);
+    if (validationError) {
+      setError(validationError);
+      onError?.(new Error(validationError));
+      return;
+    }
+
+    setError(null);
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => set className="h-8" />
+              )}
+              <span style={{ fontFamily }}>Brand Name</span>
+            </div>
+            
+            {/* Content Preview */}
+            <div classPreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+
+      // Get signed upload URL
+      const { uploadUrl, key } = await api.getUploadUrlName="p-6 space-y-4">
+              <h4 style={{ fontFamily }} className="text-xl font-bold">
+                Sample Heading
+              </h4(file.name, file.type);
+
+      // Upload directly to S3
+      await api.uploadToSignedUrl(uploadUrl, file, file.type);
+      setUploadProgress(100);
+
+      // Notify parent
+      onUploadComplete(key, `https://closetai.storage/${key}`);
+    } catch (err) {
+>
+              <p style={{ fontFamily }}>
+                This is sample text showing how your theme colors and typography will appear      const message = err instanceof Error ? err.message : 'Upload failed';
+      setError(message);
+      onError?.(err as Error);
+    } finally {
+      setIsUploading(false.
+              </p>
+              
+              {/* Button Preview */}
+              <div className="flex gap-3">
+                <button
+                  className="px-4 py-2);
+    }
+  }, [acceptedTypes, maxSizeMB, onUploadComplete, onError]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e"
+                  style={{ 
+                    backgroundColor: primary, 
+                    color: '#fff',
+                    borderRadius 
+                  }}
+                >
+                  Primary Button
+                </button>
+.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  }, [handleFile]);
+
+  const handle                <button
+                  className="px-4 py-2"
+                  style={{ 
+                    backgroundColor: accent, 
+                    color: '#fff',
+                    borderRadius 
+                  }}
+                >
+DragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e                  Accent Button
+                </button>
+              </div>
+              
+              {/* Card Preview */}
+              <div 
+                className="p-4 border"
+                style={{ borderRadius }}
+              >
+: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  }, [handleFile]);
+
+  const handleClick = () => {
+    input                <h5 style={{ fontFamily }} className="font-semibold mb-2">
+                  Card Title
+                </h5>
+                <p style={{ fontRef.current?.click();
+  };
+
+  return (
+    <div className="upload-widget">
+      <div
+        className={`upload-dropzone ${isDragging

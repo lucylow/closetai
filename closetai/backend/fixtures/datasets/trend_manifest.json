@@ -1,0 +1,13 @@
+{
+  "dataset_id": "demo-trends-001",
+  "name": "Demo fashion trend seeds",
+  "source_type": "manual",
+  "license": "demo",
+  "files": [
+    { "path": "fixtures/html/sample_blog_post.html", "file_type": "html", "metadata": { "category": "editorial" } },
+    { "path": "fixtures/html/sample_hashtag_page.html", "file_type": "html", "metadata": { "category": "social" } }
+  ],
+  "schema": {
+    "expected_fields": ["title", "publish_date", "body"]
+  }
+}

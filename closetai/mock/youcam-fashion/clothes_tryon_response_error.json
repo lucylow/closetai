@@ -1,0 +1,11 @@
+{
+  "status": 400,
+  "error": {
+    "code": "invalid_parameter",
+    "message": "The garment_category parameter is invalid.",
+    "details": {
+      "parameter": "garment_category",
+      "expected_values": ["full_body", "upper_body", "lower_body", "auto", "shoes"]
+    }
+  }
+}

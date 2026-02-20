@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800">
+  <rect fill="#F6F2EE" width="600" height="800"/>
+  <rect x="100" y="150" width="400" height="300" rx="10" fill="#e8e0d8"/>
+  <text x="300" y="320" font-family="Arial, sans-serif" font-size="28" fill="#888" text-anchor="middle">Ivory Knit Sweater</text>
+  <text x="300" y="360" font-family="Arial, sans-serif" font-size="18" fill="#666" text-anchor="middle">DemoLabel</text>
+</svg>

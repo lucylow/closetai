@@ -1,0 +1,29 @@
+[
+  {
+    "id": "rec-001",
+    "score": 0.95,
+    "items": [
+      { "sku": "SKU-001", "name": "Navy Blazer", "imageUrl": "/fixtures/images/item1.png", "colorHex": "#1a365d" },
+      { "sku": "SKU-002", "name": "White Oxford Shirt", "imageUrl": "/fixtures/images/item2.png", "colorHex": "#ffffff" }
+    ],
+    "outfitImageUrl": "/fixtures/images/composite_demo.png",
+    "caption": "Classic navy blazer paired with crisp white oxford - timeless elegance for any occasion.",
+    "hashtags": ["#MensFashion", "#ClassicStyle", "#OxfordShirt"],
+    "rationale": "Based on your wardrobe classics, this combination offersversatile sophistication.",
+    "costEstimate": { "total": 350, "currency": "USD" },
+    "source": "market"
+  },
+  {
+    "id": "rec-002",
+    "score": 0.88,
+    "items": [
+      { "sku": "SKU-003", "name": "Burgundy Sweater", "imageUrl": "/fixtures/images/item1.png", "colorHex": "#7f1d1d" }
+    ],
+    "outfitImageUrl": "/fixtures/images/composite_demo.png",
+    "caption": "Rich burgundy sweater - perfect for fall layering.",
+    "hashtags": ["#FallFashion", "#Layering"],
+    "rationale": "Complements your existing navy pieces beautifully.",
+    "costEstimate": { "total": 120, "currency": "USD" },
+    "source": "affiliate"
+  }
+]

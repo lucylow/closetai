@@ -1,0 +1,172 @@
+# Default values for closetai-backend chart
+
+replicaCount: 2
+
+nameOverride: ""
+fullnameOverride: ""
+
+image RateLimitError extends PerfectApiError {
+  constructor(message: string, requestId?: string) {
+    super(message, 'RATE_LIMIT', 429, requestId);
+    this.name = 'RateLimitError';
+  }
+}
+
+/**
+ * Error for authentication failures
+ */
+export class AuthError extends PerfectApiError {
+  constructor(message: string, requestId?::
+  repository: ghcr.io/your-org/closetai-backend
+  tag: "v1.0.0"
+  pullPolicy: IfNotPresent
+  pullSecrets: [] # ["regcred"]
+
+serviceAccount:
+  create: true
+  name: "" # defaults to fullname-sa
+
+service:
+  type: ClusterIP
+  port: 8080
+  string) {
+    super(message, 'AUTH_FAILED', 401, requestId);
+    this.name = 'AuthError';
+  }
+}
+
+/**
+ * Error for invalid requests targetPort: 5000
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory:
+ */
+export class ValidationError extends PerfectApiError {
+  constructor(message: string, requestId?: string) {
+    super(message, 'VALIDATION_ERROR', 400, requestId);
+    this "2Gi"
+
+readinessProbe:
+  path: /health/ready
+  port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeout.name = 'ValidationError';
+  }
+}
+
+// ============================================================================
+// Client Implementation
+// ============================================================================
+
+/**
+ * Perfect Corp API Client
+ * 
+ * Provides safe, typed wrapperSeconds: 3
+  failureThreshold: 3
+  successThreshold: 1
+
+livenessProbe:
+  path: /health/live
+  port: 8080
+  initial around Perfect Corp APIs with:
+ * - Automatic retry with exponential backoff
+ * - Request signing for authenticated endpointsDelaySeconds: 30
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+# Environment variables
+env:
+  NODE_ENV: production
+ 
+ * - Credit tracking via response headers
+ * - Comprehensive error handling
+ */
+export class PerfectClient {
+  private readonly client: Axios DATABASE_URL: ""
+  REDIS_URL: ""
+  PERFECT_BASE: ""
+  PERFECT_API_KEY_SECRET_NAME: perfect-api-key
+  S3_ENDPOINT: ""
+  S3_BInstance;
+  private readonly config: Required<PerfectClientConfig>;
+  private creditInfo: CreditInfo = { remaining: 0, used: 0, limitUCKET: ""
+  S3_ACCESS_KEY_SECRET_NAME: s3-creds
+
+# Secrets (referenced by env)
+secrets:
+  database:
+    name: db-secret
+    key: DATABASE_URL
+  perfect:
+    name: perfect-api-key
+    key: PERFECT_API_KEY
+  s3:
+    name: s3-creds
+    accessKey: access-key
+    secretKey: secret-key
+
+# Autoscaling configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  # CPU target for HPA (percentage)
+  targetCPUUtilizationPercentage: 60
+  # Example using externalMetric (queue depth) — name and target should be configured if you use Prometheus Adapter
+  externalMetric:
+    enabled: false
+    metricName: queue_depth
+    targetValue: 100
+
+# PodDisruptionBudget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Network Policy
+networkPolicy:
+  enabled: true
+  allowFrom:
+    - namespace: monitoring
+      podSelector: { "role": "prometheus" }
+    - namespace: default
+      podSelector: { "role": "ingress" }
+  # If you use a specific cidr allow list:
+  allowCIDRs: [] # e.g. ["10.0.0.0/8"]
+
+# Prometheus configuration
+prometheus:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+    scrapeTimeout: 10s
+    # path and port to scrape
+    path: /metrics
+    port: metrics
+    labels: {}
+
+# Pod affinity/anti-affinity
+affinity:
+  podAntiAffinity:
+    enabled: true
+
+nodeSelector: {}
+tolerations: []
+# Example toleration for infra nodes
+# - key: "node-role.kubernetes.io/infra"
+#   operator: "Exists"
+#   effect: "NoSchedule"
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000

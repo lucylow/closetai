@@ -1,0 +1,287 @@
+Below is a detailed, copy‑paste‑ready **Replit prompt** you can use to have an AI agent scaffold and wire up **PostgreSQL** for the ClosetAI **web application** (dashboard + APIs). It assumes:
+
+- Web app: **Next.js 15 + TypeScript + Tailwind**
+- DB: **Replit-hosted PostgreSQL**
+- Use case: B2C users, B2B brands, AR try-on jobs, analytics, billing.
+
+***
+
+## Prompt Title
+
+ClosetAI Web – Replit PostgreSQL Setup (Production-Ready Schema & Code)
+
+***
+
+## Prompt Body (copy this into Replit AI)
+
+You are an expert full‑stack engineer building the **PostgreSQL layer** for a production web app called **ClosetAI** running on Replit.
+
+The web frontend is **Next.js 15 (App Router) + TypeScript + Tailwind**, deployed on Replit.  
+The backend is implemented **inside the Next.js app** using `app/api/**/route.ts` handlers, also deployed on Replit.
+
+Your job:
+
+1. Create a **production‑ready PostgreSQL schema** (DDL) for ClosetAI.
+2. Provide **migration SQL files**.
+3. Provide **TypeScript DB access layer** (using `pg` library).
+4. Provide **example API routes** that use this DB.
+5. Make everything suitable for **Replit PostgreSQL** (connection via env var).
+6. Design with **B2C + B2B (brands) + AR try-on jobs + analytics + billing** in mind.
+
+***
+
+### 1. PostgreSQL: Overall Requirements
+
+Implement a schema that supports:
+
+- **Users**
+  - Anon and email users
+  - Credit balance for try‑ons
+- **Brand accounts**
+  - B2B tenants (each brand is a tenant)
+  - Stripe customer / subscription linkage
+- **Wardrobe items**
+  - Items owned by users
+  - Image keys (pointing to App/Object Storage)
+  - Categories (tops, bottoms, shoes, jewelry, etc.)
+- **AR try‑on jobs**
+  - A job representing a virtual try‑on (selfie + items)
+  - Result image key, confidence scores
+- **Analytics**
+  - Simple per‑brand metrics (MRR, DAU, conversion, etc.)
+- **Billing**
+  - Subscriptions, credit usage
+
+Do **not** over‑complicate; aim for a clean, well‑indexed schema that can scale to millions of rows but is still simple enough for a hackathon.
+
+***
+
+### 2. Environment & Connection
+
+Assume:
+
+- Replit exposes a PostgreSQL connection string via environment variable:
+  - `DATABASE_URL=postgresql://user:password@host:port/dbname`
+- Use the `pg` package in Node/Next.js.
+
+Provide:
+
+1. A **small DB client wrapper** (TypeScript) in `lib/db.ts`:
+   - Uses a singleton `Pool`.
+   - Exports helper `query<T>(text, params)`.
+
+2. Basic **health check** query (e.g., `SELECT 1`).
+
+***
+
+### 3. Schema DDL (SQL)
+
+Create **one main SQL migration file** and structure it clearly so it can be split later:
+
+- File name: `db/migrations/001_init.sql`
+- Contents:
+  - Enable `uuid-ossp` extension.
+  - Tables:
+    - `users`
+    - `brands`
+    - `wardrobe_items`
+    - `tryon_jobs`
+    - `analytics_brand_daily`
+    - `subscriptions`
+    - `user_credits`
+  - Indexes on:
+    - Users: `email`, `created_at`
+    - Brands: `slug`, `created_at`
+    - Wardrobe items: `(user_id, category)`, `created_at`
+    - Try-on jobs: `(user_id, status)`, `created_at`, `brand_id`
+  - Foreign keys:
+    - `wardrobe_items.user_id` → `users.id`
+    - `tryon_jobs.user_id` → `users.id`
+    - `tryon_jobs.brand_id` → `brands.id`
+    - `subscriptions.brand_id` → `brands.id`
+    - `user_credits.user_id` → `users.id`
+
+**Important:**
+
+- Use `UUID` primary keys with `DEFAULT uuid_generate_v4()`.
+- Use `TIMESTAMPTZ` for timestamps.
+- Use enums where appropriate (e.g., `tryon_status`).
+
+Example tables you should fully define (with all columns and types):
+
+#### `users`
+
+- `id UUID PRIMARY KEY`
+- `anon_id TEXT UNIQUE NOT NULL` (for anonymous/guest users)
+- `email TEXT UNIQUE NULL`
+- `display_name TEXT`
+- `is_brand BOOLEAN DEFAULT FALSE`
+- `credits_balance INTEGER DEFAULT 25`
+- `created_at TIMESTAMPTZ DEFAULT now()`
+- `updated_at TIMESTAMPTZ DEFAULT now()`
+
+#### `brands`
+
+- `id UUID PRIMARY KEY`
+- `user_id UUID REFERENCES users(id) ON DELETE CASCADE` (account owner)
+- `name TEXT NOT NULL`
+- `slug TEXT UNIQUE NOT NULL`
+- `stripe_customer_id TEXT`
+- `mrr NUMERIC(12,2) DEFAULT 0`
+- `created_at TIMESTAMPTZ DEFAULT now()`
+- `updated_at TIMESTAMPTZ DEFAULT now()`
+
+#### `wardrobe_items`
+
+- `id UUID PRIMARY KEY`
+- `user_id UUID REFERENCES users(id) ON DELETE CASCADE`
+- `category TEXT NOT NULL` (e.g. `tops`, `bottoms`, `shoes`, `accessories`, `jewelry`)
+- `name TEXT`
+- `brand TEXT`
+- `image_key TEXT NOT NULL` (key in object storage)
+- `ai_tags TEXT[]` (e.g. `['neutral','streetwear']`)
+- `created_at TIMESTAMPTZ DEFAULT now()`
+
+#### `tryon_jobs`
+
+- `id UUID PRIMARY KEY`
+- `user_id UUID REFERENCES users(id) ON DELETE SET NULL`
+- `brand_id UUID REFERENCES brands(id) ON DELETE SET NULL`
+- `status TEXT NOT NULL DEFAULT 'queued'` (e.g. `queued`, `processing`, `completed`, `failed`)
+- `category TEXT` (same categories as wardrobe)
+- `selfie_key TEXT` (object storage key)
+- `wardrobe_item_ids UUID[]` (array of wardrobe item ids used)
+- `result_key TEXT` (result composite image key)
+- `confidence NUMERIC(4,3)` (e.g. `0.942`)
+- `created_at TIMESTAMPTZ DEFAULT now()`
+- `completed_at TIMESTAMPTZ`
+
+You must write the **full SQL** for all tables above and indexes.
+
+***
+
+### 4. TypeScript DB Client (`lib/db.ts`)
+
+Generate a minimal **DB client** for Next.js, assuming the file lives at `lib/db.ts`:
+
+- Imports `Pool` from `pg`.
+- Uses `DATABASE_URL` from `process.env`.
+- Exposes:
+
+```ts
+export async function query<T = any>(text: string, params?: any[]): Promise<{ rows: T[] }>
+```
+
+- Handles a singleton `Pool` (so that dev hot reload doesn’t leak connections).
+
+***
+
+### 5. TypeScript Data Access Layer (DAL)
+
+Create a simple DAL for key operations:
+
+- `lib/repos/users.ts`
+  - `getUserById(id: string)`
+  - `getUserByAnonId(anonId: string)`
+  - `createAnonUser()`
+- `lib/repos/wardrobe.ts`
+  - `createWardrobeItem(...)`
+  - `listWardrobeItems(userId: string, category?: string)`
+- `lib/repos/tryon.ts`
+  - `createTryOnJob(...)`
+  - `getTryOnJob(jobId: string)`
+  - `listRecentTryOnJobs(userId: string, limit: number)`
+
+Write these in **TypeScript**, using the `query` helper from `lib/db.ts`. Keep them **thin and focused**.
+
+***
+
+### 6. Example API Routes (Next.js App Router)
+
+Add 3 example handlers under `app/api`:
+
+1. `app/api/users/guest/route.ts`  
+   `POST` → create an anonymous user and return JSON:
+
+   ```json
+   {
+     "user": {
+       "id": "...",
+       "anonId": "guest_xxx",
+       "creditsBalance": 25
+     }
+   }
+   ```
+
+2. `app/api/wardrobe/route.ts`  
+   `GET` → list wardrobe items for the current user (for now, accept `userId` query param).  
+   `POST` → create a wardrobe item with JSON body: `{ userId, category, name, imageKey, brand? }`.
+
+3. `app/api/tryon/route.ts`  
+   `POST` → create a try‑on job with JSON body:
+
+   ```json
+   {
+     "userId": "...",
+     "brandId": "...",
+     "category": "tops",
+     "selfieKey": "wardrobe/user_xxx/selfies/2026-02-19.webp",
+     "wardrobeItemIds": ["uuid1", "uuid2"]
+   }
+   ```
+
+   Respond with job JSON containing `id`, `status`, `createdAt`.
+
+Each route should:
+
+- Use `NextRequest` / `NextResponse`.
+- Validate minimally (check required fields).
+- Call into the DAL functions.
+
+***
+
+### 7. Replit-Specific Notes
+
+At the end of the generated code, include a short **section of comments** explaining:
+
+- How to set `DATABASE_URL` in Replit’s Secrets panel.
+- How to run migrations (e.g., using `psql` or a simple `npm run migrate` script you define).
+- A simple `npm` script to apply `db/migrations/001_init.sql` on Replit:
+  - `npm run db:migrate`
+
+Provide a minimal `scripts` block for `package.json` that includes:
+
+```json
+"scripts": {
+  "db:migrate": "psql \"$DATABASE_URL\" -f db/migrations/001_init.sql",
+  "db:health": "node scripts/db-health-check.mjs"
+}
+```
+
+And a tiny `scripts/db-health-check.mjs` that runs `SELECT 1`.
+
+***
+
+### 8. Style & Quality
+
+- Use **TypeScript** everywhere in the Node/Next parts.
+- Keep code **idiomatic** and production‑grade, but not over‑engineered.
+- Comment only where it clarifies intent, not every line.
+- Assume no external ORM (no Prisma, no Drizzle) – just `pg`.
+
+***
+
+Generate:
+
+1. `db/migrations/001_init.sql`
+2. `lib/db.ts`
+3. `lib/repos/users.ts`
+4. `lib/repos/wardrobe.ts`
+5. `lib/repos/tryon.ts`
+6. `app/api/users/guest/route.ts`
+7. `app/api/wardrobe/route.ts`
+8. `app/api/tryon/route.ts`
+9. `scripts/db-health-check.mjs`
+10. `package.json` `scripts` snippet with `db:migrate` and `db:health`.
+
+Make sure all code is **self‑consistent** and can be dropped into a Next.js 15 + Replit project with minimal edits.

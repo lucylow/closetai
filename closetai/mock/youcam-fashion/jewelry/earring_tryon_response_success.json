@@ -1,0 +1,13 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-earring-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_earring_demo.png",
+      "mask": "/placeholders/mask_earring.png",
+      "earring_type": "stud",
+      "style_used": "elegant"
+    }
+  }
+}

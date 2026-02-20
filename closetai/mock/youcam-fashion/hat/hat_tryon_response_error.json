@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_head_not_detected",
+    "message": "Hat try-on failed: head area not properly detected in source image."
+  }
+}

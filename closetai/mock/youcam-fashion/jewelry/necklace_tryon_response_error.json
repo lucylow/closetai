@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_invalid_neck_area",
+    "message": "Necklace try-on failed: neck area not detected."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "compositeUrl": "/static/composite_demo.png",
+  "masks": {
+    "SKU-101": "/static/mask1.png",
+    "SKU-102": "/static/mask2.png"
+  }
+}

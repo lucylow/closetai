@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_invalid_body_area",
+    "message": "Body area not detected for bag placement. Ensure full torso is in frame."
+  }
+}

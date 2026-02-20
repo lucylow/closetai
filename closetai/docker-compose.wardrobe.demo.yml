@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: closetai_wardrobe
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD","pg_isready","-U","dev"]
+      interval: 5s
+      retries: 10
+
+  embedding:
+    image: python:3.10-slim
+    volumes:
+      - ./ml:/workspace/ml
+    working_dir: /workspace/ml
+    command: sh -c "pip install -r requirements.txt && python server/embedding_service.py"
+    ports:
+      - "8000:8000"
+
+  backend:
+    build:
+      context: ./backend
+    command: sh -c "npm ci && npm run dev"
+    volumes:
+      - ./backend:/workspace/backend
+    working_dir: /workspace/backend
+    environment:
+      DATABASE_URL: postgres://dev:dev@postgres:5432/closetai_wardrobe
+      EMBEDDING_SERVER_URL: http://embedding:8000
+      DEMO_MODE: "true"
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      - embedding

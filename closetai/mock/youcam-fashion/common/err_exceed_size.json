@@ -1,0 +1,7 @@
+{
+  "status": 413,
+  "error": {
+    "code": "exceed_max_filesize",
+    "message": "Input file size exceeds the maximum limit (10MB)."
+  }
+}

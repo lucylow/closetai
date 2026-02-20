@@ -1,0 +1,38 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "closetai.fullname" . }}-netpol
+  labels:
+    {{ include "closetai.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{ include "closetai.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+{{- range .Values.networkPolicy.allowFrom }}
+      - namespaceSelector:
+          matchLabels:
+            name: {{ .namespace }}
+        podSelector:
+          matchLabels:
+{{ toYaml .podSelector | indent 12 }}
+{{- end }}
+    - from:
+{{- range .Values.networkPolicy.allowCIDRs }}
+      - ipBlock:
+          cidr: {{ . }}
+{{- end }}
+      - podSelector: {}
+  egress:
+    - to:
+      - ipBlock:
+          cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443
+{{- end }}

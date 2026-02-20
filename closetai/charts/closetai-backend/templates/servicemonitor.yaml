@@ -1,0 +1,23 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "closetai.fullname" . }}-sm
+  labels:
+    release: prometheus
+    {{- range , := .Values.prometheus.serviceMonitor.labels }}
+    {{  }}: {{  | quote }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{ include "closetai.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: {{ .Values.prometheus.serviceMonitor.port | default "metrics" }}
+      path: {{ .Values.prometheus.serviceMonitor.path | default "/metrics" }}
+      interval: {{ .Values.prometheus.serviceMonitor.interval | default "15s" }}
+      scrapeTimeout: {{ .Values.prometheus.serviceMonitor.scrapeTimeout | default "10s" }}
+{{- end }}

@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_invalid_ref",
+    "message": "Reference image does not contain valid accessory content."
+  }
+}

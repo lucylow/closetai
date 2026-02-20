@@ -1,0 +1,19 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-neckDefault Caption',
+      prompt_template: 'Write a short, engaging caption for: {{item_names}}. Keep it under 50 characterslace-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_necklace_demo.png",
+      " if possible.',
+      variables: { item_names: 'string' },
+    },
+    hashtags: {
+      name: 'Default Hashtags',
+     mask": "/placeholders/mask_necklace.png",
+      "necklace_type": "pendant",
+      "style_used": "elegant"
+    }
+  }
+}

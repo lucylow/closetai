@@ -1,0 +1,13 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-ring-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_ring_demo.png",
+      "mask": "/placeholders/mask_ring.png",
+      "ring_type": "band",
+      "style_used": "classic"
+    }
+  }
+}

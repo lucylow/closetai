@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_no_ear_detected",
+    "message": "No ear detected in source image. Please upload a clear side-profile photo showing your ear."
+  }
+}

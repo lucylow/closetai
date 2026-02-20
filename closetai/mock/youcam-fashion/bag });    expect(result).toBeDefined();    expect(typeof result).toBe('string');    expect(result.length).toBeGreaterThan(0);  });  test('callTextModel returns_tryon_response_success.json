@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-bag-tryon hashtags in demo mode', async () => {
+    const result = await callTextModel({ 
+      prompt: 'Generate hashtags', 
+      operation: 'hashtags' 
+    });
+    expect-001",
+    "estimated_seconds": 2,
+    "output": {
+      "composite_url": "/placeholders/tryon_bag_demo.png",
+      "mask": "/placeholders/mask_bag.png",
+      "bag_type": "handbag",
+      "style_used": "casual"
+    }
+  }
+}

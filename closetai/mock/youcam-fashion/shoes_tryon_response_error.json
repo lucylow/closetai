@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "error_apply_region_mismatch",
+    "message": "Source and reference images don't align for shoes placement."
+  }
+}

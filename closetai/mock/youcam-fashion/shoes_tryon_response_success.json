@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-shoes-tryon-001",
+    "estimated_seconds": 1,
+    "output": {
+      "composite_url": "/placeholders/tryon_shoes_demo.png",
+      "mask": "/placeholders/mask_shoes.png",
+      "style_selected": "style_retro_fashion"
+    }
+  }
+}

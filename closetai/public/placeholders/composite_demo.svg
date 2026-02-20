@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+  <rect fill="#f8f4f0" width="800" height="1000"/>
+  <circle cx="400" cy="350" r="130" fill="#e0d5c5"/>
+  <rect x="150" y="480" width="220" height="320" fill="#F6F2EE" stroke="#ccc"/>
+  <rect x="430" y="480" width="220" height="320" fill="#123456" stroke="#ccc"/>
+  <text x="400" y="900" font-family="Arial" font-size="20" fill="#666" text-anchor="middle">Virtual Try-On Composite</text>
+</svg>

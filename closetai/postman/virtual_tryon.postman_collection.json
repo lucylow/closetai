@@ -1,0 +1,66 @@
+{
+  "info": {
+    "name": "Virtual Try-On Demo API",
+    "_postman_id": "virtual-tryon-demo",
+    "description": "Demo collection for virtual try-on endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/demo/health"
+      }
+    },
+    {
+      "name": "Get Recommendations",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/demo/generate",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"seedItemIds\": [\"seed-1\"], \"context\": {\"occasion\":\"casual\",\"vibe\":\"minimal\"}, \"options\": {\"numResults\": 3} }"
+        }
+      }
+    },
+    {
+      "name": "Create Try-On",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/demo/tryon",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"baseImageUrl\": \"/placeholders/selfie_demo.jpg\", \"recommendation\": { \"id\":\"rec-1\" } }"
+        }
+      }
+    },
+    {
+      "name": "Get Try-On Status",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/demo/tryon/:taskId"
+      }
+    },
+    {
+      "name": "Get Fixtures",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/demo/fixtures/recommendations_demo.json"
+      }
+    }
+  ]
+}

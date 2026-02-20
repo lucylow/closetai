@@ -1,0 +1,38 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-necklace-tryon-001",
+    "estimated_seconds": 2,
+    "output": {
+      "composite_url": "/fixtures/jewelry/necklace_tryon_result.png",
+      "mask_url": "/fixtures/jewelry/necklace_mask.png",
+      "detections": {
+        "neck_anchor": {"x": 400, "y": 380},
+        "pose": {
+          "keypoints": [
+            {"name": "nose", "x": 400, "y": 250, "confidence": 0.98},
+            {"name": "neck_left", "x": 350, "y": 380, "confidence": 0.92},
+            {"name": "neck_right", "x": 450, "y": 380, "confidence": 0.91}
+          ]
+        }
+      },
+      "variants": [
+        {
+          "variant_id": "necklace_gold_001",
+          "metal": "gold",
+          "gem": {"color_hex": "#50C878", "type": "emerald"},
+          "preview_url": "/fixtures/jewelry/variants/necklace_gold.png",
+          "sku": "NECK-GOLD-001"
+        },
+        {
+          "variant_id": "necklace_silver_001",
+          "metal": "silver",
+          "gem": {"color_hex": "#E8E8E8", "type": "diamond"},
+          "preview_url": "/fixtures/jewelry/variants/necklace_silver.png",
+          "sku": "NECK-SILVER-001"
+        }
+      ],
+      "jewelry_type": "necklace"
+    }
+  }
+}

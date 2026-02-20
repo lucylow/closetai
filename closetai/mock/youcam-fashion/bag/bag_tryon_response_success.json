@@ -1,0 +1,8 @@
+{
+  "status": 200,
+  "data": {
+    "task_id": "demo-bag-tryon-001",
+    "estimated_seconds": 2,
+    "output": {
+      "composite_url": "/fixtures/bag/bag_tryon_result.png",
+      "mask_url": "/fixtures/bag/bag_mask.png

@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "error": {
+    "code": "invalid_parameter",
+    "message": "Reference image URL parameter is required."
+  }
+}
